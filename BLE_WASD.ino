@@ -33,7 +33,7 @@
 
 
 #define DEBUG 0
-#define BUFFER_SIZE 15
+#define BUFFER_SIZE 30
 
 //pins to use for PS2 keyboard
 #define CLK_PIN 2
@@ -43,7 +43,7 @@
 //buffer to store key strokes
 static volatile uint8_t buffer[BUFFER_SIZE];
 
-//keep track of out place in the buffer
+//keep track of our place in the buffer
 uint8_t write_index = 0;
 uint8_t read_index = 0;
 
