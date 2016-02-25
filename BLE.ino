@@ -112,8 +112,8 @@ uint8_t is_media(uint8_t c) {
   switch (c) {
     case (PS2_PLAY_PAUSE):
     case (PS2_STOP):
-    case (PS2_FWD_TRACK):
-    case (PS2_REV_TRACK):
+    case (PS2_NEXT_TRACK):
+    case (PS2_PREV_TRACK):
     case (PS2_VOL_UP):
     case (PS2_VOL_DWN):
     case (PS2_MUTE):
@@ -132,10 +132,10 @@ void send_media(uint8_t c) {
     case (PS2_STOP):
       str = "MEDIASTOP";
       break;
-    case (PS2_FWD_TRACK):
+    case (PS2_NEXT_TRACK):
       str = "MEDIANEXT";
       break;
-    case (PS2_REV_TRACK):
+    case (PS2_PREV_TRACK):
       str = "MEDIAPREVIOUS";
       break;
     case (PS2_VOL_UP):

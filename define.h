@@ -1,6 +1,3 @@
-
-typedef unsigned char uint8_t;
-
 /**
  * HID key codes
  */
@@ -305,46 +302,12 @@ typedef unsigned char uint8_t;
 #define PS2_PAUSE_SEQUENCE      0xE1 // 0xE11477E10F014F077
 #define PS2_PAUSE_KEY_FAKE      0x6D
 
-uint8_t PS2_to_HID_keymap[] = {
-  0, HID_F9, 0, HID_F5, HID_F3, HID_F1, HID_F2, HID_F12,
-  0, HID_F10, HID_F8, HID_F6, HID_F4, HID_TAB, HID_ACCENT, 0,
-  0, HID_LEFT_ALT, HID_LEFT_SHIFT, 0, HID_LEFT_CTRL, HID_Q, HID_1, 0,
-  0, 0, HID_Z, HID_S, HID_A, HID_W, HID_2, 0,
-  0, HID_C, HID_X, HID_D, HID_E, HID_4, HID_3, 0,
-  0, HID_SPACE, HID_V, HID_F, HID_T, HID_R, HID_5, 0,
-  0, HID_N, HID_B, HID_H, HID_G, HID_Y, HID_6, 0,
-  0, 0, HID_M, HID_J, HID_U, HID_7, HID_8, 0,
-  0, HID_COMMA, HID_K, HID_I, HID_O, HID_0, HID_9, 0,
-  0, HID_PERIOD, HID_FWD_SLASH, HID_L, HID_SEMI_COLON, HID_P, HID_HYPH, 0,
-  0, 0, HID_APOSTROPHY, 0, HID_LEFT_BRACKET, HID_EQUAL, 0, 0,
-  HID_CAPS, HID_RIGHT_SHIFT, HID_ENTER, HID_RIGHT_BRACKET, 0, HID_BACK_SLASH, 0, 0,
-  0, HID_BACK_SLASH_NON_US, 0, 0, 0, 0, HID_BACK_SPACE, 0,
-  0, HID_KP_1, 0, HID_KP_4, HID_KP_7, 0, 0, 0,
-  HID_KP_0, HID_KP_PERIOD, HID_KP_2, HID_KP_5, HID_KP_6, HID_KP_8, HID_ESC, HID_NUM_LCK,
-  HID_F11, HID_KP_PLUS, HID_KP_3, HID_KP_HYPH, HID_KP_STAR, HID_KP_9, HID_SCR_LCK, 0,
-  0, 0, 0, HID_F7
+/**
+ * Arrays for storing the key mapping from PS2 to HID
+ */
 
-};
+typedef unsigned char uint8_t;
 
-
-
-
-uint8_t PS2Long_to_HID_keymap[] = {
-  0, 0, 0, 0, 0, 0, 0, 0,
-  0, 0, 0, 0, 0, 0, 0, 0,
-  0, HID_RIGHT_ALT, HID_PRNT_SRN, 0, HID_RIGHT_CTRL, 0x00, 0, 0,
-  0, 0, 0, 0, 0, 0, 0, HID_LEFT_GUI,
-  0, HID_VOL_DWN, 0, 0, 0, 0, 0, HID_RIGHT_GUI,
-  0, 0, 0, 0, 0, 0, 0, HID_APPLICATION,
-  0, 0, HID_VOL_UP, 0, 0x00, 0, 0, 0,
-  0, 0, 0, 0x00, 0, 0, 0, 0,
-  0, 0, 0, 0, 0, 0, 0, 0,
-  0, 0, HID_KP_FWD_SLASH, 0, 0, 0x00, 0, 0,
-  0, 0, 0, 0, 0, 0, 0, 0,
-  0, 0, HID_KP_ENTER, 0, 0, 0, 0, 0,
-  0, 0, 0, 0, 0, 0, 0, 0,
-  0, HID_END, 0, HID_LEFT_ARROW, HID_HOME, HID_PAUSE, 0, 0,
-  HID_INSERT, HID_DEL, HID_DOWN_ARROW, 0, HID_RIGHT_ARROW, HID_UP_ARROW, 0, 0,
-  0, 0, HID_PG_DWN, 0, 0, HID_PG_UP
-};
+uint8_t PS2_to_HID_keymap[255];
+uint8_t PS2Long_to_HID_keymap[255];
 

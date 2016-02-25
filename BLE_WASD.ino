@@ -63,6 +63,7 @@ void setup() {
     while (!Serial);  // required for Flora & Micro
     delay(500);
   }
+  setup_keymaps();
   setup_PS2();
   start_BLE(0); //use 1 to configure the bluetooth module(or press ctrl + shift + esc)
 }
