@@ -53,7 +53,7 @@ void process_buffer() {
   uint8_t new_index;
   if (read_buffer(0) != 0) {
     //regular key press
-    if (read_buffer(0) != 0xF0 && read_buffer(0) != 0xE0 && read_buffer(0) != 0xE1) {
+    if (read_buffer(0) != PS2_RELEASE && read_buffer(0) != PS2_EXTENDED && read_buffer(0) != PS2_PAUSE_SEQUENCE) {
       if (is_modifier(read_buffer(0), 0)) {
         set_modifier(read_buffer(0), 0);
         send_key(read_buffer(0), 0, 1);
@@ -65,7 +65,7 @@ void process_buffer() {
     }
 
     //regular key release, check for modifier
-    else if (read_buffer(0) == 0xF0) {
+    else if (read_buffer(0) == PS2_RELEASE) {
       while (!read_buffer(1)); //wait for next byte
       if (is_modifier(read_buffer(1), 0)) {
         unset_modifier(read_buffer(1), 0);
@@ -75,10 +75,10 @@ void process_buffer() {
     }
 
     //long key
-    else if (read_buffer(0) == 0xE0) {
+    else if (read_buffer(0) == PS2_EXTENDED) {
       while (!read_buffer(1)); //wait for next byte
       //long key press
-      if (read_buffer(1) != 0xF0) {
+      if (read_buffer(1) != PS2_RELEASE) {
         if (is_modifier(read_buffer(1), 1)) {
           set_modifier(read_buffer(1), 1);
           send_key(read_buffer(1), 1, 1);
@@ -91,7 +91,7 @@ void process_buffer() {
         }
 
 
-        if (read_buffer(1) == 0x12) { //obnoxiously long print screen key
+        if (read_buffer(1) == PS2_PRNT_SCR) { //obnoxiously long print screen key
           while (!read_buffer(3)); //wait for the remaining 2 bytes before clearing buffer
           new_index = read_index + 4;
         }
@@ -109,7 +109,7 @@ void process_buffer() {
 
         release_key();
 
-        if (read_buffer(1) == 0x12) { //obnoxiously long print screen key
+        if (read_buffer(1) == PS2_PRNT_SCR) { //obnoxiously long print screen key
           while (!read_buffer(5)); //wait for the remaining 3 bytes before clearing buffer
           new_index = read_index + 5;
         }
@@ -121,8 +121,8 @@ void process_buffer() {
     }
 
     //extraaaaaa long, pain in the ass, pause key
-    else if (read_buffer(0) == 0xE1) {
-      send_key(0x6D, 1, 0);
+    else if (read_buffer(0) == PS2_PAUSE_SEQUENCE) {
+      send_key(PS2_PAUSE_KEY_FAKE, 1, 0);
       while (!read_buffer(7)); //wait for the remaining 7 bytes before clearing buffer, WTF
       new_index = read_index + 8;
     }

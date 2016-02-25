@@ -87,10 +87,10 @@ void release_key() {
 uint8_t is_modifier(uint8_t c, uint8_t is_long_key) {
   if (is_long_key) {
     switch (c) {
-      case (PS2_LEFT_GUI - 0xE000):
-      case (PS2_RIGHT_CTRL - 0xE000):
-      case (PS2_RIGHT_ALT - 0xE000):
-      case (PS2_RIGHT_GUI - 0xE000):
+      case (PS2_LEFT_GUI):
+      case (PS2_RIGHT_CTRL):
+      case (PS2_RIGHT_ALT):
+      case (PS2_RIGHT_GUI):
         return 1;
         break;
     }
@@ -110,13 +110,13 @@ uint8_t is_modifier(uint8_t c, uint8_t is_long_key) {
 
 uint8_t is_media(uint8_t c) {
   switch (c) {
-    case (PS2_PLAY_PAUSE - 0xE000):
-    case (PS2_STOP - 0xE000):
-    case (PS2_FWD_TRACK - 0xE000):
-    case (PS2_REV_TRACK - 0xE000):
-    case (PS2_VOL_UP - 0xE000):
-    case (PS2_VOL_DWN - 0xE000):
-    case (PS2_MUTE - 0xE000):
+    case (PS2_PLAY_PAUSE):
+    case (PS2_STOP):
+    case (PS2_FWD_TRACK):
+    case (PS2_REV_TRACK):
+    case (PS2_VOL_UP):
+    case (PS2_VOL_DWN):
+    case (PS2_MUTE):
       return 1;
       break;
   }
@@ -126,25 +126,25 @@ uint8_t is_media(uint8_t c) {
 void send_media(uint8_t c) {
   String str;
   switch (c) {
-    case (PS2_PLAY_PAUSE - 0xE000):
+    case (PS2_PLAY_PAUSE):
       str = "PLAYPAUSE";
       break;
-    case (PS2_STOP - 0xE000):
+    case (PS2_STOP):
       str = "MEDIASTOP";
       break;
-    case (PS2_FWD_TRACK - 0xE000):
+    case (PS2_FWD_TRACK):
       str = "MEDIANEXT";
       break;
-    case (PS2_REV_TRACK - 0xE000):
+    case (PS2_REV_TRACK):
       str = "MEDIAPREVIOUS";
       break;
-    case (PS2_VOL_UP - 0xE000):
+    case (PS2_VOL_UP):
       str = "VOLUME+,100";
       break;
-    case (PS2_VOL_DWN - 0xE000):
+    case (PS2_VOL_DWN):
       str = "VOLUME-,100";
       break;
-    case (PS2_MUTE - 0xE000):
+    case (PS2_MUTE):
       str = "MUTE";
       break;
   }
@@ -154,16 +154,16 @@ void send_media(uint8_t c) {
 void set_modifier(uint8_t c, uint8_t is_long_key) {
   if (is_long_key) {
     switch (c) {
-      case (PS2_LEFT_GUI - 0xE000):
+      case (PS2_LEFT_GUI):
         modifiers |= 1 << 3;
         break;
-      case (PS2_RIGHT_CTRL - 0xE000):
+      case (PS2_RIGHT_CTRL):
         modifiers |= 1 << 4;
         break;
-      case (PS2_RIGHT_ALT - 0xE000):
+      case (PS2_RIGHT_ALT):
         modifiers |= 1 << 6;
         break;
-      case (PS2_RIGHT_GUI - 0xE000):
+      case (PS2_RIGHT_GUI):
         modifiers |= 1 << 7;
         break;
     }
@@ -189,16 +189,16 @@ void set_modifier(uint8_t c, uint8_t is_long_key) {
 void unset_modifier(uint8_t c, uint8_t is_long_key) {
   if (is_long_key) {
     switch (c) {
-      case (PS2_LEFT_GUI - 0xE000):
+      case (PS2_LEFT_GUI):
         modifiers &= ~(1 << 3);
         break;
-      case (PS2_RIGHT_CTRL - 0xE000):
+      case (PS2_RIGHT_CTRL):
         modifiers &= ~(1 << 4);
         break;
-      case (PS2_RIGHT_ALT - 0xE000):
+      case (PS2_RIGHT_ALT):
         modifiers &= ~(1 << 6);
         break;
-      case (PS2_RIGHT_GUI - 0xE000):
+      case (PS2_RIGHT_GUI):
         modifiers &= ~(1 << 7);
         break;
     }
