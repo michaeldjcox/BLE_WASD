@@ -1,9 +1,13 @@
+/*
+ * Functions associated with BLE communication
+ */
 
+// Stores the parts of the BLE key command
+KeyReport report;
 
-
-
-
-
+/**
+ * Start the low energy bluetooth module
+ */
 void start_BLE(bool reset) {
 
   ble.begin(DEBUG); //verbose on-off
@@ -41,11 +45,51 @@ void start_BLE(bool reset) {
         Serial.println(F("Couldn't reset??"));
       }
     }
-
   }
-
 }
 
+/**
+ * Updates the key report given a key press
+ * 
+ * Up to six keys can be simultanesouly pressed plus the modifier keys
+ * 
+ */
+void report_add(uint8_t k) {
+  uint8_t i;
+  if (k >= PS2_EXTENDED) {
+    report.modifiers |= 1 << (k - PS2_EXTENDED);
+  } else if (report.keys[0] != k && report.keys[1] != k &&
+             report.keys[2] != k && report.keys[3] != k &&
+             report.keys[4] != k && report.keys[5] != k) {
+    for (i = 0; i < 6; ++i) {
+      if (report.keys[i] == 0) {
+        report.keys[i] = k;
+        break;
+      }
+    }
+  }
+}
+
+/**
+ * Updates the key report given a key release
+ */
+void report_remove(uint8_t k) {
+  uint8_t i;
+  if (k >= PS2_EXTENDED) {
+    report.modifiers &= ~(1 << (k - PS2_EXTENDED));
+  } else {
+    for (i = 0; i < 6; ++i) {
+      if (report.keys[i] == k) {
+        report.keys[i] = 0;
+        break;
+      }
+    }
+  }
+}
+
+/**
+ * Sends the key report over BLE
+ */
 void send_report() {  
   String cmd = "AT+BLEKEYBOARDCODE=" + 
                 hex_to_str(report.modifiers) + 
@@ -64,141 +108,68 @@ void send_report() {
     }
 }
 
-
-uint8_t is_modifier(uint8_t c, uint8_t is_long_key) {
-  if (is_long_key) {
-    switch (c) {
-      case (PS2_LEFT_GUI):
-      case (PS2_RIGHT_CTRL):
-      case (PS2_RIGHT_ALT):
-      case (PS2_RIGHT_GUI):
-        return 1;
-        break;
-    }
+/**
+ * Create a two character hex string for debugging
+ */
+String hex_to_str(uint8_t hex) {
+  String str = String(hex, HEX);
+  if (hex < 16) {
+    str = "0" + str;
   }
-  else {
-    switch (c) {
-      case PS2_LEFT_CTRL:
-      case PS2_LEFT_SHIFT:
-      case PS2_LEFT_ALT:
-      case PS2_RIGHT_SHIFT:
-        return 1;
-        break;
-    }
-  }
-  return 0;
+  return str;
 }
 
+/**
+ * Tests if a HID key code corresponds to a media key
+ */
 uint8_t is_media(uint8_t c) {
+  
   switch (c) {
-    case (PS2_PLAY_PAUSE):
-    case (PS2_STOP):
-    case (PS2_NEXT_TRACK):
-    case (PS2_PREV_TRACK):
-    case (PS2_VOL_UP):
-    case (PS2_VOL_DWN):
-    case (PS2_MUTE):
+    case (HID_PLAY_PAUSE):
+    case (HID_STOP):
+    case (HID_NEXT_TRACK):
+    case (HID_PREV_TRACK):
+    case (HID_VOL_UP):
+    case (HID_VOL_DWN):
+    case (HID_MUTE):
       return 1;
       break;
   }
   return 0;
 }
 
+/**
+ * Sends a media control key (rather than the HID key code)
+ */
 void send_media(uint8_t c) {
-  String str;
+  String str = "AT+BLEHIDCONTROLKEY=";
   switch (c) {
-    case (PS2_PLAY_PAUSE):
-      str = "PLAYPAUSE";
+    case (HID_PLAY_PAUSE):
+      str += "PLAYPAUSE";
       break;
-    case (PS2_STOP):
+    case (HID_STOP):
       str = "MEDIASTOP";
       break;
-    case (PS2_NEXT_TRACK):
+    case (HID_NEXT_TRACK):
       str = "MEDIANEXT";
       break;
-    case (PS2_PREV_TRACK):
+    case (HID_PREV_TRACK):
       str = "MEDIAPREVIOUS";
       break;
-    case (PS2_VOL_UP):
+    case (HID_VOL_UP):
       str = "VOLUME+,100";
       break;
-    case (PS2_VOL_DWN):
+    case (HID_VOL_DWN):
       str = "VOLUME-,100";
       break;
-    case (PS2_MUTE):
+    case (HID_MUTE):
       str = "MUTE";
       break;
   }
-  ble.println("AT+BLEHIDCONTROLKEY=" + str);
-}
+  ble.println(str);
 
-void set_modifier(uint8_t c, uint8_t is_long_key) {
-  if (is_long_key) {
-    switch (c) {
-      case (PS2_LEFT_GUI):
-        modifiers |= 1 << 3;
-        break;
-      case (PS2_RIGHT_CTRL):
-        modifiers |= 1 << 4;
-        break;
-      case (PS2_RIGHT_ALT):
-        modifiers |= 1 << 6;
-        break;
-      case (PS2_RIGHT_GUI):
-        modifiers |= 1 << 7;
-        break;
-    }
-  }
-  else {
-    switch (c) {
-      case PS2_LEFT_CTRL:
-        modifiers |= 1 << 0;
-        break;
-      case PS2_LEFT_SHIFT:
-        modifiers |= 1 << 1;
-        break;
-      case PS2_LEFT_ALT:
-        modifiers |= 1 << 2;
-        break;
-      case PS2_RIGHT_SHIFT:
-        modifiers |= 1 << 5;
-        break;
-    }
-  }
-}
-
-void unset_modifier(uint8_t c, uint8_t is_long_key) {
-  if (is_long_key) {
-    switch (c) {
-      case (PS2_LEFT_GUI):
-        modifiers &= ~(1 << 3);
-        break;
-      case (PS2_RIGHT_CTRL):
-        modifiers &= ~(1 << 4);
-        break;
-      case (PS2_RIGHT_ALT):
-        modifiers &= ~(1 << 6);
-        break;
-      case (PS2_RIGHT_GUI):
-        modifiers &= ~(1 << 7);
-        break;
-    }
-  }
-  else {
-    switch (c) {
-      case PS2_LEFT_CTRL:
-        modifiers &= ~(1 << 0);
-        break;
-      case PS2_LEFT_SHIFT:
-        modifiers &= ~(1 << 1);
-        break;
-      case PS2_LEFT_ALT:
-        modifiers &= ~(1 << 2);
-        break;
-      case PS2_RIGHT_SHIFT:
-        modifiers &= ~(1 << 5);
-        break;
-    }
+  if(DEBUG){
+    Serial.println(str);
   }
 }
 

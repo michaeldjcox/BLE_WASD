@@ -1,3 +1,17 @@
+
+#define DEBUG 0
+
+/**
+ * Size of buffer for key strokes
+ */
+#define BUFFER_SIZE 30
+
+/*
+ * pins to use for PS2 keyboard
+ */
+#define CLK_PIN 2
+#define DATA_PIN 3
+
 /**
  * HID key codes
  */

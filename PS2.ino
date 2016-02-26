@@ -1,4 +1,34 @@
+/*
+ * Functions associated with PS2 communication
+ */
 
+//buffer to store key strokes
+static volatile uint8_t buffer[BUFFER_SIZE];
+
+//keep track of our place in the buffer
+static volatile uint8_t head, tail;
+
+//keep track of PS2 bits sent and received
+static volatile uint8_t sendBits, msg, bitCount, setBits;
+
+//the LED setting
+uint8_t leds;
+
+// Should we send the LED state to the keyboard and stop receiving for a while
+bool send_leds;
+
+// Has the extended PS2 mode been entered
+bool ext;
+
+// Are we in key release
+bool brk;
+
+// The number of PS2 key codes we should now ignore e.g. after Pause key is pressed
+int skip;
+
+/**
+ * Set up the PS2 interface
+ */
 void setup_PS2() {
   delay(1000);
   pinMode(CLK_PIN, INPUT_PULLUP);
@@ -10,9 +40,15 @@ void setup_PS2() {
   }
 
   attachInterrupt(1, ps2interrupt, FALLING);
-}
 
-// The ISR for the external interrupt
+  head = 0;
+  tail = 0;
+  sendBits = 0;
+}
+   
+/**
+ * The ISR for the external interrupt
+ */
 void ps2interrupt(void) {
   static uint8_t bitcount=0;
   static uint8_t incoming=0;
@@ -63,6 +99,9 @@ void ps2interrupt(void) {
   }
 }
 
+/**
+ * Reads the next PS2 key code from the buffer
+ */
 static inline uint8_t get_scan_code(void) {
   uint8_t c, i;
 
@@ -75,7 +114,9 @@ static inline uint8_t get_scan_code(void) {
   return c;
 }
 
-//read the raw PS2 data. This is ugly but so are all the other methods online. Is there even a clean way to read PS2????
+/**
+ * Gets the next PS2 key press from the buffer and decides what to do in response
+ */
 void process_buffer() {
     uint8_t k = get_scan_code();
     uint8_t k2;
@@ -104,7 +145,7 @@ void process_buffer() {
                 }
 
                 if (k2) {
-                    boolean send_key = special_functions(k2, ext, report.modifiers, brk);
+                    boolean send_key = special_functions(k2, report, brk);
                     if (send_key) {
                         if (brk){
                             report_remove(k2);
@@ -133,42 +174,9 @@ void process_buffer() {
     }
 }
 
-
-
-uint8_t read_buffer(uint8_t i) {
-  return buffer[(read_index + i) % BUFFER_SIZE];
-}
-
-void report_add(uint8_t k) {
-  uint8_t i;
-  if (k >= 224) {
-    report.modifiers |= 1 << (k - 224);
-  } else if (report.keys[0] != k && report.keys[1] != k &&
-             report.keys[2] != k && report.keys[3] != k &&
-             report.keys[4] != k && report.keys[5] != k) {
-    for (i = 0; i < 6; ++i) {
-      if (report.keys[i] == 0) {
-        report.keys[i] = k;
-        break;
-      }
-    }
-  }
-}
-
-void report_remove(uint8_t k) {
-  uint8_t i;
-  if (k >= 224) {
-    report.modifiers &= ~(1 << (k - 224));
-  } else {
-    for (i = 0; i < 6; ++i) {
-      if (report.keys[i] == k) {
-        report.keys[i] = 0;
-        break;
-      }
-    }
-  }
-}
-
+/**
+ * Sends a message up to the keyboard in order to set LEDs
+ */
 void send_msg(uint8_t m) {
   noInterrupts();
   pinMode(CLK_PIN, OUTPUT);      
@@ -184,6 +192,9 @@ void send_msg(uint8_t m) {
   interrupts();
 }
 
+/**
+ * Sets up the keyboard mapping from PS2 to HID
+ */
 void setup_keymaps(){
         PS2_to_HID_keymap[PS2_A]                    = HID_A;
         PS2_to_HID_keymap[PS2_B]                    = HID_B;

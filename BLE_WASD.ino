@@ -4,15 +4,16 @@
 #include "BluefruitConfig.h"
 #include "define.h"
 
-
 #if not defined (_VARIANT_ARDUINO_DUE_X_) && not defined (_VARIANT_ARDUINO_ZERO_)
   #include <SoftwareSerial.h>
 #endif
 
-
 /**
- * BLE WASD Keyboard
+ * BLE WASD Keyboard V2
+ * 
  * Daniel Nugent
+ * Dorian Rudolf
+ * Michael Cox
  * 
  * This program uses an adafruit BLE + Micro microcontroller to decode PS2, remap the scan codes to HID, and send over bluetooth GAT
  * Additional parts include the the tricket lipo backpack, WASD code keyboard, microusb male, and 3.7v batteries
@@ -22,41 +23,7 @@
  * 
  * Make sure you keyboard can run on 3.3v or make sure you can provide  it with 5v
  *
- *
- * Problems: The status leds don't work, only one way communication
- *           
- * 
  */
-
-
-
-
-
-#define DEBUG 0
-#define BUFFER_SIZE 30
-
-//pins to use for PS2 keyboard
-#define CLK_PIN 2
-#define DATA_PIN 3
-
-
-//buffer to store key strokes
-static volatile uint8_t buffer[BUFFER_SIZE];
-
-//keep track of our place in the buffer
-uint8_t write_index = 0;
-uint8_t read_index = 0;
-
-//bitmask of our currently pressed modifier keys(shift, ctrl, alt, gui, etc)
-uint8_t modifiers = 0;
-
-static volatile uint8_t head, tail;
-static volatile uint8_t sendBits, msg, bitCount, setBits;
-KeyReport report;
-uint8_t leds;
-bool send_leds;
-bool ext, brk;
-int skip;
 
 // Create the bluefruit object, either software serial...uncomment these lines
 /*
@@ -64,7 +31,9 @@ int skip;
 Adafruit_BluefruitLE_SPI ble(BLUEFRUIT_SPI_CS, BLUEFRUIT_SPI_IRQ, BLUEFRUIT_SPI_RST);
 
 
-
+/**
+ * Initial setup
+ */
 void setup() {
   if(DEBUG){
     Serial.begin(115200); //debuging
@@ -76,18 +45,11 @@ void setup() {
   start_BLE(0); //use 1 to configure the bluetooth module(or press ctrl + shift + esc)
 }
 
+/**
+ * Main loop - repeats processing the entered PS2 keys
+ */
 void loop() {
   process_buffer();
-}
-
-
-//Create a two character hex string for debugging
-String hex_to_str(uint8_t hex) {
-  String str = String(hex, HEX);
-  if (hex < 16) {
-    str = "0" + str;
-  }
-  return str;
 }
 
 
