@@ -102,10 +102,6 @@ void send_report() {
                 hex_to_str(report.keys[5]);
                 
     ble.println(cmd);  
-
-    if(DEBUG){
-      Serial.println(cmd);
-    }
 }
 
 /**
@@ -148,29 +144,25 @@ void send_media(uint8_t c) {
       str += "PLAYPAUSE";
       break;
     case (HID_STOP):
-      str = "MEDIASTOP";
+      str += "MEDIASTOP";
       break;
     case (HID_NEXT_TRACK):
-      str = "MEDIANEXT";
+      str += "MEDIANEXT";
       break;
     case (HID_PREV_TRACK):
-      str = "MEDIAPREVIOUS";
+      str += "MEDIAPREVIOUS";
       break;
     case (HID_VOL_UP):
-      str = "VOLUME+,100";
+      str += "VOLUME+,100";
       break;
     case (HID_VOL_DWN):
-      str = "VOLUME-,100";
+      str += "VOLUME-,100";
       break;
     case (HID_MUTE):
-      str = "MUTE";
+      str += "MUTE";
       break;
   }
   ble.println(str);
-
-  if(DEBUG){
-    Serial.println(str);
-  }
 }
 
 

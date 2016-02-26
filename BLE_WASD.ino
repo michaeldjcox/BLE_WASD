@@ -42,7 +42,7 @@ void setup() {
   }
   setup_keymaps();
   setup_PS2();
-  start_BLE(0); //use 1 to configure the bluetooth module(or press ctrl + shift + esc)
+  start_BLE(1); //use 1 to configure the bluetooth module(or press ctrl + shift + esc)
 }
 
 /**
