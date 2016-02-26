@@ -56,8 +56,8 @@ void start_BLE(bool reset) {
  */
 void report_add(uint8_t k) {
   uint8_t i;
-  if (k >= PS2_EXTENDED) {
-    report.modifiers |= 1 << (k - PS2_EXTENDED);
+  if (k >= HID_LEFT_CTRL) {
+    report.modifiers |= 1 << (k - HID_LEFT_CTRL);
   } else if (report.keys[0] != k && report.keys[1] != k &&
              report.keys[2] != k && report.keys[3] != k &&
              report.keys[4] != k && report.keys[5] != k) {
@@ -75,8 +75,8 @@ void report_add(uint8_t k) {
  */
 void report_remove(uint8_t k) {
   uint8_t i;
-  if (k >= PS2_EXTENDED) {
-    report.modifiers &= ~(1 << (k - PS2_EXTENDED));
+  if (k >= HID_LEFT_CTRL) {
+    report.modifiers &= ~(1 << (k - HID_LEFT_CTRL));
   } else {
     for (i = 0; i < 6; ++i) {
       if (report.keys[i] == k) {
