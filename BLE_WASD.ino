@@ -50,6 +50,14 @@ uint8_t read_index = 0;
 //bitmask of our currently pressed modifier keys(shift, ctrl, alt, gui, etc)
 uint8_t modifiers = 0;
 
+static volatile uint8_t head, tail;
+static volatile uint8_t sendBits, msg, bitCount, setBits;
+KeyReport report;
+uint8_t leds;
+bool send_leds;
+bool ext, brk;
+int skip;
+
 // Create the bluefruit object, either software serial...uncomment these lines
 /*
 /* ...hardware SPI, using SCK/MOSI/MISO hardware SPI pins and then user selected CS/IRQ/RST */

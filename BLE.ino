@@ -46,43 +46,24 @@ void start_BLE(bool reset) {
 
 }
 
+void send_report() {  
+  String cmd = "AT+BLEKEYBOARDCODE=" + 
+                hex_to_str(report.modifiers) + 
+                "-00-" + 
+                hex_to_str(report.keys[0]) + "-" +
+                hex_to_str(report.keys[1]) + "-" +
+                hex_to_str(report.keys[2]) + "-" +
+                hex_to_str(report.keys[3]) + "-" +
+                hex_to_str(report.keys[4]) + "-" +
+                hex_to_str(report.keys[5]);
+                
+    ble.println(cmd);  
 
-
-void send_key(uint8_t c, uint8_t is_long_key, uint8_t no_release) {
-  uint8_t hid_key;
-  if (is_long_key) {
-    hid_key = PS2Long_to_HID_keymap[c];
-  }
-  else {
-    hid_key = PS2_to_HID_keymap[c];
-  }
-
-
-  //peek and intercept keys before they get sent for special functions
-  bool send_key = special_functions(hid_key, is_long_key);
-
-  //convert to command
-  String key = hex_to_str(hid_key);
-  String mod = hex_to_str(modifiers);
-  String cmd = "AT+BLEKEYBOARDCODE=" + mod + "-00-" + key + "-00-00-00-00";
-
-  if(send_key){
-    //send bluetooth
-    ble.println(cmd);
-    if (!no_release) {
-      ble.println("AT+BLEKEYBOARDCODE=00-00");
-    }
-  
     if(DEBUG){
-      Serial.println("hid key: " + key);
+      Serial.println(cmd);
     }
-  }
-  
 }
 
-void release_key() {
-  ble.println("AT+BLEKEYBOARDCODE=00-00");
-}
 
 uint8_t is_modifier(uint8_t c, uint8_t is_long_key) {
   if (is_long_key) {

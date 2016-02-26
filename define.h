@@ -178,6 +178,8 @@
 #define HID_RIGHT_SHIFT         0xE5 //Keyboard RightShift
 #define HID_RIGHT_ALT           0xE6 //Keyboard RightAlt
 #define HID_RIGHT_GUI           0xE7 //Keyboard Right GUI
+#define HID_SET_RESET_LEDS      0xED //Set the keyboard LEDs
+
 
 /**
  * PS2 key codes
@@ -310,4 +312,5 @@ typedef unsigned char uint8_t;
 
 uint8_t PS2_to_HID_keymap[255];
 uint8_t PS2Long_to_HID_keymap[255];
+
 

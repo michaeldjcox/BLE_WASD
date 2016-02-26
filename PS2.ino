@@ -13,134 +13,175 @@ void setup_PS2() {
 }
 
 // The ISR for the external interrupt
-void ps2interrupt(void)
-{
-  static uint8_t bitcount = 0;
-  static uint8_t incoming = 0;
-  static uint32_t prev_ms = 0;
+void ps2interrupt(void) {
+  static uint8_t bitcount=0;
+  static uint8_t incoming=0;
+  static uint32_t prev_ms=0;
   uint32_t now_ms;
   uint8_t n, val;
-
-  val = digitalRead(DATA_PIN);
-  now_ms = millis();
-  if (now_ms - prev_ms > 250) {
-    bitcount = 0;
-    incoming = 0;
-  }
-  prev_ms = now_ms;
-  n = bitcount - 1;
-  if (n <= 7) {
-    incoming |= (val << n);
-  }
-  bitcount++;
-  if (bitcount == 11) {
-
-    buffer[write_index] = incoming;
-    write_index = (write_index + 1) % BUFFER_SIZE;
+  
+  if (!sendBits){
+    val = digitalRead(DATA_PIN);
+    now_ms = millis();
+    if (now_ms - prev_ms > 250) {
+      bitcount = 0;
+      incoming = 0;
+    }
+    prev_ms = now_ms;
+    n = bitcount - 1;
+    if (n <= 7) {
+      incoming |= (val << n);
+    }
+    bitcount++;
+    if (bitcount == 11) {
+      uint8_t i = head + 1;
+      if (i >= BUFFER_SIZE) i = 0;
+      if (i != tail) {
+        buffer[i] = incoming;
+        head = i;
+      }
     if(DEBUG){
       Serial.print("Raw PS2: ");
       Serial.println(incoming,HEX);
     }
-    bitcount = 0;
-    incoming = 0;
+      bitcount = 0;
+      incoming = 0;
+    }
+  } else {
+    --sendBits;
+    uint8_t b = bitCount - 1;
+    if (b == 8){
+      digitalWrite(DATA_PIN, !(setBits & 1));
+    } else if (b == 9) {
+      pinMode(DATA_PIN, INPUT_PULLUP);
+    } else if (b < 8) {
+      bool bt = (msg >> b) & 1;
+      digitalWrite(DATA_PIN,  bt);
+      setBits += bt;
+    }
+    ++bitCount; 
   }
 }
 
+static inline uint8_t get_scan_code(void) {
+  uint8_t c, i;
 
+  i = tail;
+  if (i == head) return 0;
+  i++;
+  if (i >= BUFFER_SIZE) i = 0;
+  c = buffer[i];
+  tail = i;
+  return c;
+}
 
 //read the raw PS2 data. This is ugly but so are all the other methods online. Is there even a clean way to read PS2????
 void process_buffer() {
-  uint8_t new_index;
-  if (read_buffer(0) != 0) {
-    //regular key press
-    if (read_buffer(0) != PS2_RELEASE && read_buffer(0) != PS2_EXTENDED && read_buffer(0) != PS2_PAUSE_SEQUENCE) {
-      if (is_modifier(read_buffer(0), 0)) {
-        set_modifier(read_buffer(0), 0);
-        send_key(read_buffer(0), 0, 1);
-      }
-      else {
-        send_key(read_buffer(0), 0, 0);
-      }
-      new_index = read_index + 1;
+    uint8_t k = get_scan_code();
+    uint8_t k2;
+    if (k) {
+        if (skip) {
+            --skip;
+        } else {
+            if (k == PS2_EXTENDED) {
+                ext = true;
+            } else if (k == PS2_RELEASE) {
+                brk = true;
+            } else if (k == PS2_LED_ACK) {
+                if (send_leds) {
+                    send_leds = false;
+                    send_msg(leds);
+                }
+            } else {
+                if (k == PS2_PAUSE_SEQUENCE) {
+                    k2 = HID_PAUSE;
+                    skip = 7;
+                    brk = true;
+                    report_add(k2);
+                    send_report();
+                } else {
+                    k2 = ext ? PS2Long_to_HID_keymap[k] : PS2_to_HID_keymap[k];
+                }
+
+                if (k2) {
+                    boolean send_key = special_functions(k2, ext, report.modifiers, brk);
+                    if (send_key) {
+                        if (brk){
+                            report_remove(k2);
+                            if (k2 == HID_NUM_LCK || k2 == HID_SCR_LCK || k2 == HID_CAPS){
+                                send_leds = true;
+                                if (k2 == HID_NUM_LCK) {
+                                    leds ^= 2;
+                                } else if (k2 == HID_SCR_LCK) {
+                                    leds ^= 1;
+                                } else if (k2 == HID_CAPS) {
+                                    leds ^= 4;
+                                }
+                                send_msg((byte) HID_SET_RESET_LEDS);
+                            }
+                        } else {
+                            report_add(k2);
+                        }
+                        send_report();
+                    }
+                }
+
+                brk = false;
+                ext = false;
+            }
+        }
     }
-
-    //regular key release, check for modifier
-    else if (read_buffer(0) == PS2_RELEASE) {
-      while (!read_buffer(1)); //wait for next byte
-      if (is_modifier(read_buffer(1), 0)) {
-        unset_modifier(read_buffer(1), 0);
-      }
-      release_key();
-      new_index = read_index + 2;
-    }
-
-    //long key
-    else if (read_buffer(0) == PS2_EXTENDED) {
-      while (!read_buffer(1)); //wait for next byte
-      //long key press
-      if (read_buffer(1) != PS2_RELEASE) {
-        if (is_modifier(read_buffer(1), 1)) {
-          set_modifier(read_buffer(1), 1);
-          send_key(read_buffer(1), 1, 1);
-        }
-        else if (is_media(read_buffer(1))) {
-          send_media(read_buffer(1));
-        }
-        else {
-          send_key(read_buffer(1), 1, 0);
-        }
-
-
-        if (read_buffer(1) == PS2_PRNT_SCR) { //obnoxiously long print screen key
-          while (!read_buffer(3)); //wait for the remaining 2 bytes before clearing buffer
-          new_index = read_index + 4;
-        }
-        else {
-          new_index = read_index + 2;
-        }
-      }
-
-      //long key release
-      else {
-        while (!read_buffer(2)); //wait for next byte
-        if (is_modifier(read_buffer(2), 1)) {
-          unset_modifier(read_buffer(2), 1);
-        }
-
-        release_key();
-
-        if (read_buffer(1) == PS2_PRNT_SCR) { //obnoxiously long print screen key
-          while (!read_buffer(5)); //wait for the remaining 3 bytes before clearing buffer
-          new_index = read_index + 5;
-        }
-        else {
-
-          new_index = read_index + 3;
-        }
-      }
-    }
-
-    //extraaaaaa long, pain in the ass, pause key
-    else if (read_buffer(0) == PS2_PAUSE_SEQUENCE) {
-      send_key(PS2_PAUSE_KEY_FAKE, 1, 0);
-      while (!read_buffer(7)); //wait for the remaining 7 bytes before clearing buffer, WTF
-      new_index = read_index + 8;
-    }
-
-    //clear read bytes
-    for (int i = 0; i < new_index - read_index; i++) {
-      uint8_t x = (read_index + i) % BUFFER_SIZE;
-      buffer[x] = 0;
-    }
-
-    read_index = new_index % BUFFER_SIZE;
-  }
 }
 
 
 
 uint8_t read_buffer(uint8_t i) {
   return buffer[(read_index + i) % BUFFER_SIZE];
+}
+
+void report_add(uint8_t k) {
+  uint8_t i;
+  if (k >= 224) {
+    report.modifiers |= 1 << (k - 224);
+  } else if (report.keys[0] != k && report.keys[1] != k &&
+             report.keys[2] != k && report.keys[3] != k &&
+             report.keys[4] != k && report.keys[5] != k) {
+    for (i = 0; i < 6; ++i) {
+      if (report.keys[i] == 0) {
+        report.keys[i] = k;
+        break;
+      }
+    }
+  }
+}
+
+void report_remove(uint8_t k) {
+  uint8_t i;
+  if (k >= 224) {
+    report.modifiers &= ~(1 << (k - 224));
+  } else {
+    for (i = 0; i < 6; ++i) {
+      if (report.keys[i] == k) {
+        report.keys[i] = 0;
+        break;
+      }
+    }
+  }
+}
+
+void send_msg(uint8_t m) {
+  noInterrupts();
+  pinMode(CLK_PIN, OUTPUT);      
+  digitalWrite(CLK_PIN, LOW);
+  delayMicroseconds(60);
+  pinMode(CLK_PIN, INPUT_PULLUP);
+  msg = m;
+  bitCount = 0;
+  sendBits = 12;
+  setBits = 0;
+  pinMode(DATA_PIN, OUTPUT);
+  digitalWrite(DATA_PIN, LOW);
+  interrupts();
 }
 
 void setup_keymaps(){
