@@ -5,6 +5,8 @@
 // Stores the parts of the BLE key command
 KeyReport report;
 
+bool bluetooth;
+
 /**
  * Start the low energy bluetooth module
  */
@@ -46,6 +48,25 @@ void start_BLE(bool reset) {
       }
     }
   }
+
+  bluetooth=true;
+}
+
+void stop_BLE() {
+  ble.end();
+  bluetooth=false;
+}
+
+bool onBle() {
+  return bluetooth;
+}
+
+void start_USB() {
+  Keyboard.begin();
+}
+
+void stop_USB() {
+  Keyboard.end();
 }
 
 /**
@@ -100,8 +121,12 @@ void send_report() {
                 hex_to_str(report.keys[3]) + "-" +
                 hex_to_str(report.keys[4]) + "-" +
                 hex_to_str(report.keys[5]);
-                
-    ble.println(cmd);  
+
+    if (bluetooth) {
+      ble.println(cmd);  
+    } else {
+      Keyboard.sendReport(&report);
+    }
 }
 
 /**

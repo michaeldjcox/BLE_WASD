@@ -31,11 +31,27 @@ bool special_functions(uint8_t hid_key, KeyReport keyReport, bool brk){
     return 0;
   }
 
-  if (is_media(hid_key)) {
+  //reconfigure keyboard
+  if(hid_key == HID_ESC && keyReport.modifiers == 0x01){
     if (!brk) {
-      send_media(hid_key);
+      if (onBle()) {
+        stop_BLE();
+        start_USB();
+      } else {
+        stop_USB();
+        start_BLE(0); //reset Keyboard
+      }
     }
     return 0;
+  }
+
+  if (is_media(hid_key)) {
+    if (bluetooth) {
+      if (!brk) {
+        send_media(hid_key);
+      }
+      return 0;
+    }
   }
 
   //remap keypad to work as T9 keyboard...
