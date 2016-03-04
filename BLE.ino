@@ -55,7 +55,7 @@ void stop_BLE() {
  * Sends the key report over BLE
  */
 void send_report(KeyReport report) {  
-    String cmd = "AT+BLEKEYBOARDCODE=" + reportToString(report);
+    String cmd = "AT+BLEKEYBOARDCODE=" + report_to_string(report);
     ble.println(cmd);  
 }
 

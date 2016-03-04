@@ -50,21 +50,21 @@ void report_remove(uint8_t hidKey) {
 /**
  * Test modifiers to see if shift is currently pressed
  */
-bool isShift() {
+bool is_shift() {
   return keyReport.modifiers == 0x02;
 }
 
 /**
  * Test modifiers to see if control is currently pressed
  */
-bool isControl() {
+bool is_control() {
   return keyReport.modifiers == 0x01;
 }
 
 /**
  * Test modifiers to see if control and shift are currently pressed
  */
-bool isControlShift() {
+bool is_control_shift() {
   return keyReport.modifiers == 0x03;
 }
 
@@ -143,7 +143,7 @@ void send_report() {
   } 
 
  if (usb) {
-    logKeyReport(keyReport);
+    log_key_report(keyReport);
     Keyboard.sendReport(&keyReport);
   }  
 }
@@ -157,7 +157,7 @@ void send_consumer_report() {
   } 
   
   if (usb) {
-    logKeyReport(consumerReport);
+    log_key_report(consumerReport);
     Keyboard.sendReport(&consumerReport);
   }
 }
@@ -165,9 +165,9 @@ void send_consumer_report() {
 /**
  * Outputs a debug string for the current key report
  */
-void logKeyReport(KeyReport report) {
+void log_key_report(KeyReport report) {
   if(DEBUG) {
-    String cmd = "0xFD-" + reportToString(report);
+    String cmd = "0xFD-" + report_to_string(report);
     Serial.println(cmd);
   }
 }
@@ -175,7 +175,7 @@ void logKeyReport(KeyReport report) {
 /**
  * Returns a string representation of a key report
  */
-String reportToString(KeyReport report) {
+String report_to_string(KeyReport report) {
       String cmd = hex_to_str(report.modifiers) + 
       hex_to_str(report.reserved) + "-" + 
       hex_to_str(report.keys[0]) + "-" +
@@ -201,7 +201,7 @@ String hex_to_str(uint8_t hidKey) {
 /**
  * Switches mode from bluetooth to USB and vice versa
  */
-void switchMode() {
+void switch_mode() {
   if (bluetooth) {
     bluetooth=false;
     stop_BLE();

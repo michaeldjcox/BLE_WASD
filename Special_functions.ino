@@ -24,7 +24,7 @@ bool special_functions(uint8_t hidKey, bool brk) {
   }
 
   //reconfigure keyboard
-  if(hidKey == HID_ESC && isControlShift()){
+  if(hidKey == HID_ESC && is_control_shift()){
     if (!brk) {
         reset();        
     }
@@ -32,9 +32,9 @@ bool special_functions(uint8_t hidKey, bool brk) {
   }
 
   //switch bluetooth to USB or back
-  if(hidKey == HID_ESC && isControl()){
+  if(hidKey == HID_ESC && is_control()){
     if (!brk) {
-      switchMode();
+      switch_mode();
     }
     return 0;
   }
