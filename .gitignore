@@ -27,4 +27,6 @@
 *.out
 *.app
 
+.idea
+
 BLE_WASD.iml
