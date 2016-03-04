@@ -47,22 +47,37 @@ void report_remove(uint8_t k) {
   }
 }
 
+/**
+ * Test modifiers to see if shift is currently pressed
+ */
 bool isShift() {
   return keyReport.modifiers == 0x02;
 }
 
+/**
+ * Test modifiers to see if control is currently pressed
+ */
 bool isControl() {
   return keyReport.modifiers == 0x01;
 }
 
+/**
+ * Test modifiers to see if control and shift are currently pressed
+ */
 bool isControlShift() {
   return keyReport.modifiers == 0x03;
 }
 
+/**
+ * Clears all currently set modifiers - not sure if this is really needed
+ */
 void clear_modifiers() {
   keyReport.modifiers = 0;
 }
 
+/**
+ * Adds the specified consumer key to the consumer key report
+ */
 void consumer_add(uint8_t k) {
   media_hid_key= k;
   consumerReport.modifiers=0x00;
@@ -104,6 +119,9 @@ void consumer_add(uint8_t k) {
     consumerReport.keys[5]=0x00;
 }
 
+/**
+ * Removes the specified consumer key to the consumer key report
+ */
 void consumer_remove(uint8_t k) {
   media_hid_key= 0;
   consumerReport.modifiers=0x00;  
@@ -116,10 +134,9 @@ void consumer_remove(uint8_t k) {
   consumerReport.keys[5]=0x00;  
 }
 
-KeyReport getKeyReport() {
-  return keyReport;
-}
-
+/**
+ * Sends the current key report either over bluetooth or USB cable
+ */
 void send_report() {
   if (bluetooth) {
     send_report(keyReport);
@@ -131,6 +148,9 @@ void send_report() {
   }  
 }
 
+/**
+ * Sends the current consumer key reports either over bluetooth or USB cable
+ */
 void send_consumer_report() {
   if (bluetooth) {
     send_media(media_hid_key);
@@ -142,10 +162,21 @@ void send_consumer_report() {
   }
 }
 
+/**
+ * Outputs a debug string for the current key report
+ */
 void logKeyReport(KeyReport report) {
   if(DEBUG) {
-    String cmd = "0xFD-" + 
-      hex_to_str(report.modifiers) + 
+    String cmd = "0xFD-" + reportToString(report);
+    Serial.println(cmd);
+  }
+}
+
+/**
+ * Returns a string representation of a key report
+ */
+String reportToString(KeyReport report) {
+      String cmd = hex_to_str(report.modifiers) + 
       hex_to_str(report.reserved) + "-" + 
       hex_to_str(report.keys[0]) + "-" +
       hex_to_str(report.keys[1]) + "-" +
@@ -153,11 +184,23 @@ void logKeyReport(KeyReport report) {
       hex_to_str(report.keys[3]) + "-" +
       hex_to_str(report.keys[4]) + "-" +
       hex_to_str(report.keys[5]);
-      
-      Serial.println(cmd);
-    }
+      return cmd;
 }
 
+/**
+ * Create a two character hex string for debugging
+ */
+String hex_to_str(uint8_t hex) {
+  String str = String(hex, HEX);
+  if (hex < 16) {
+    str = "0" + str;
+  }
+  return str;
+}
+
+/**
+ * Switches mode from bluetooth to USB and vice versa
+ */
 void switchMode() {
   if (bluetooth) {
     bluetooth=false;
@@ -172,6 +215,9 @@ void switchMode() {
   }
 }
 
+/**
+ * Performs a hard reset for the current mode - USB or bluetooth
+ */
 void reset() {
   if (bluetooth) {
     bluetooth=false;

@@ -44,6 +44,9 @@ void start_BLE(bool reset) {
   }
 }
 
+/**
+ * Stops bluetooth
+ */
 void stop_BLE() {
   ble.end();
 }
@@ -52,27 +55,8 @@ void stop_BLE() {
  * Sends the key report over BLE
  */
 void send_report(KeyReport report) {  
-    String cmd = "AT+BLEKEYBOARDCODE=" + 
-              hex_to_str(report.modifiers) + 
-              "-00-" + 
-              hex_to_str(report.keys[0]) + "-" +
-              hex_to_str(report.keys[1]) + "-" +
-              hex_to_str(report.keys[2]) + "-" +
-              hex_to_str(report.keys[3]) + "-" +
-              hex_to_str(report.keys[4]) + "-" +
-              hex_to_str(report.keys[5]);
+    String cmd = "AT+BLEKEYBOARDCODE=" + reportToString(report);
     ble.println(cmd);  
-}
-
-/**
- * Create a two character hex string for debugging
- */
-String hex_to_str(uint8_t hex) {
-  String str = String(hex, HEX);
-  if (hex < 16) {
-    str = "0" + str;
-  }
-  return str;
 }
 
 /**
