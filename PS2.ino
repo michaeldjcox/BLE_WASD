@@ -1,7 +1,6 @@
 /*
  * Functions associated with PS2 communication
  */
-
 //buffer to store key strokes
 static volatile uint8_t buffer[BUFFER_SIZE];
 
@@ -144,8 +143,8 @@ void process_buffer() {
                     k2 = ext ? PS2Long_to_HID_keymap[k] : PS2_to_HID_keymap[k];
                 }
 
-                if (k2) {
-                    boolean send_key = special_functions(k2, report, brk);
+                if (k2) {                  
+                    boolean send_key = special_functions(k2, brk);
                     if (send_key) {
                         if (brk){
                             report_remove(k2);

@@ -2,18 +2,12 @@
  * Functions associated with BLE communication
  */
 
-// Stores the parts of the BLE key command
-KeyReport report;
-
-bool bluetooth;
-
 /**
  * Start the low energy bluetooth module
  */
 void start_BLE(bool reset) {
 
   ble.begin(DEBUG); //verbose on-off
-
 
   if (reset) {
     /* Initialise the module */
@@ -48,85 +42,26 @@ void start_BLE(bool reset) {
       }
     }
   }
-
-  bluetooth=true;
 }
 
 void stop_BLE() {
   ble.end();
-  bluetooth=false;
-}
-
-bool onBle() {
-  return bluetooth;
-}
-
-void start_USB() {
-  Keyboard.begin();
-}
-
-void stop_USB() {
-  Keyboard.end();
-}
-
-/**
- * Updates the key report given a key press
- * 
- * Up to six keys can be simultanesouly pressed plus the modifier keys
- * 
- */
-void report_add(uint8_t k) {
-  uint8_t i;
-  if (k >= HID_LEFT_CTRL) {
-    report.modifiers |= 1 << (k - HID_LEFT_CTRL);
-  } else if (report.keys[0] != k && report.keys[1] != k &&
-             report.keys[2] != k && report.keys[3] != k &&
-             report.keys[4] != k && report.keys[5] != k) {
-    for (i = 0; i < 6; ++i) {
-      if (report.keys[i] == 0) {
-        report.keys[i] = k;
-        break;
-      }
-    }
-  }
-}
-
-/**
- * Updates the key report given a key release
- */
-void report_remove(uint8_t k) {
-  uint8_t i;
-  if (k >= HID_LEFT_CTRL) {
-    report.modifiers &= ~(1 << (k - HID_LEFT_CTRL));
-  } else {
-    for (i = 0; i < 6; ++i) {
-      if (report.keys[i] == k) {
-        report.keys[i] = 0;
-        break;
-      }
-    }
-  }
 }
 
 /**
  * Sends the key report over BLE
  */
-void send_report() {  
-  String cmd = "AT+BLEKEYBOARDCODE=" + 
-                hex_to_str(report.modifiers) + 
-                "-00-" + 
-                hex_to_str(report.keys[0]) + "-" +
-                hex_to_str(report.keys[1]) + "-" +
-                hex_to_str(report.keys[2]) + "-" +
-                hex_to_str(report.keys[3]) + "-" +
-                hex_to_str(report.keys[4]) + "-" +
-                hex_to_str(report.keys[5]);
-
-    if (bluetooth) {
-      ble.println(cmd);  
-    } else {
-      Keyboard.sendReport(&report);
-    }
+void send_report(KeyReport report) {  
+    String cmd = "AT+BLEKEYBOARDCODE=" + 
+              hex_to_str(report.modifiers) + 
+              "-00-" + 
+              hex_to_str(report.keys[0]) + "-" +
+              hex_to_str(report.keys[1]) + "-" +
+              hex_to_str(report.keys[2]) + "-" +
+              hex_to_str(report.keys[3]) + "-" +
+              hex_to_str(report.keys[4]) + "-" +
+              hex_to_str(report.keys[5]);
+    ble.println(cmd);  
 }
 
 /**
@@ -138,25 +73,6 @@ String hex_to_str(uint8_t hex) {
     str = "0" + str;
   }
   return str;
-}
-
-/**
- * Tests if a HID key code corresponds to a media key
- */
-uint8_t is_media(uint8_t c) {
-  
-  switch (c) {
-    case (HID_PLAY_PAUSE):
-    case (HID_STOP):
-    case (HID_NEXT_TRACK):
-    case (HID_PREV_TRACK):
-    case (HID_VOL_UP):
-    case (HID_VOL_DWN):
-    case (HID_MUTE):
-      return 1;
-      break;
-  }
-  return 0;
 }
 
 /**
