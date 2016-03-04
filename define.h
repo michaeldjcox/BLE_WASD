@@ -1,5 +1,5 @@
 
-#define DEBUG 0
+#define DEBUG 1
 
 /**
  * Size of buffer for key strokes

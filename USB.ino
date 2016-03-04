@@ -6,7 +6,7 @@ KeyReport consumerReport;
 uint8_t mediaHidKey;
 
 volatile boolean bluetooth=true;
-volatile boolean usb=true;
+volatile boolean usb=false;
 
 /**
  * Updates the key report given a key press
@@ -176,7 +176,7 @@ void log_key_report(KeyReport report) {
  * Returns a string representation of a key report
  */
 String report_to_string(KeyReport report) {
-      String cmd = hex_to_str(report.modifiers) + 
+      String cmd = hex_to_str(report.modifiers) + "-" + 
       hex_to_str(report.reserved) + "-" + 
       hex_to_str(report.keys[0]) + "-" +
       hex_to_str(report.keys[1]) + "-" +
