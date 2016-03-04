@@ -62,9 +62,9 @@ void send_report(KeyReport report) {
 /**
  * Sends a media control key (rather than the HID key code)
  */
-void send_media(uint8_t c) {
+void send_media(uint8_t hidKey) {
   String str = "AT+BLEHIDCONTROLKEY=";
-  switch (c) {
+  switch (hidKey) {
     case (HID_PLAY_PAUSE):
       str += "PLAYPAUSE";
       break;

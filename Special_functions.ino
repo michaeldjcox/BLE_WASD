@@ -14,17 +14,17 @@
  * Return a 1 to send the key and a 0 to block it from being sent
  */
  
-bool special_functions(uint8_t hid_key, bool brk) {
+bool special_functions(uint8_t hidKey, bool brk) {
 
   //reset modifiers - just to clean up every now and then
-  if (hid_key == HID_ENTER && brk) {  
+  if (hidKey == HID_ENTER && brk) {  
     if (!brk) {
         clear_modifiers();
     }
   }
 
   //reconfigure keyboard
-  if(hid_key == HID_ESC && isControlShift()){
+  if(hidKey == HID_ESC && isControlShift()){
     if (!brk) {
         reset();        
     }
@@ -32,18 +32,18 @@ bool special_functions(uint8_t hid_key, bool brk) {
   }
 
   //switch bluetooth to USB or back
-  if(hid_key == HID_ESC && isControl()){
+  if(hidKey == HID_ESC && isControl()){
     if (!brk) {
       switchMode();
     }
     return 0;
   }
 
-  if (is_media(hid_key)) {    
+  if (is_media(hidKey)) {    
     if (!brk) {
-      consumer_add(hid_key);
+      consumer_add(hidKey);
     } else {
-      consumer_remove(hid_key);
+      consumer_remove(hidKey);
     }
     send_consumer_report();
     return 0;
@@ -58,9 +58,9 @@ bool special_functions(uint8_t hid_key, bool brk) {
 /**
  * Tests if a HID key code corresponds to a media key
  */
-uint8_t is_media(uint8_t c) {
+bool is_media(uint8_t hidKey) {
   
-  switch (c) {
+  switch (hidKey) {
     case (HID_PLAY_PAUSE):
     case (HID_STOP):
     case (HID_NEXT_TRACK):
@@ -68,9 +68,9 @@ uint8_t is_media(uint8_t c) {
     case (HID_VOL_UP):
     case (HID_VOL_DWN):
     case (HID_MUTE):
-      return 1;
+      return true;
       break;
   }
-  return 0;
+  return false;
 }
 

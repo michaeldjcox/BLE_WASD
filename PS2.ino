@@ -14,7 +14,7 @@ static volatile uint8_t sendBits, msg, bitCount, setBits;
 uint8_t leds;
 
 // Should we send the LED state to the keyboard and stop receiving for a while
-bool send_leds;
+bool sendLeds;
 
 // Has the extended PS2 mode been entered
 bool ext;
@@ -128,8 +128,8 @@ void process_buffer() {
             } else if (k == PS2_RELEASE) {
                 brk = true;
             } else if (k == PS2_LED_ACK) {
-                if (send_leds) {
-                    send_leds = false;
+                if (sendLeds) {
+                    sendLeds = false;
                     send_msg(leds);
                 }
             } else {
@@ -149,7 +149,7 @@ void process_buffer() {
                         if (brk){
                             report_remove(k2);
                             if (k2 == HID_NUM_LCK || k2 == HID_SCR_LCK || k2 == HID_CAPS){
-                                send_leds = true;
+                                sendLeds = true;
                                 if (k2 == HID_NUM_LCK) {
                                     leds ^= 2;
                                 } else if (k2 == HID_SCR_LCK) {
@@ -176,13 +176,13 @@ void process_buffer() {
 /**
  * Sends a message up to the keyboard in order to set LEDs
  */
-void send_msg(uint8_t m) {
+void send_msg(uint8_t ps2Msg) {
   noInterrupts();
   pinMode(CLK_PIN, OUTPUT);      
   digitalWrite(CLK_PIN, LOW);
   delayMicroseconds(60);
   pinMode(CLK_PIN, INPUT_PULLUP);
-  msg = m;
+  msg = ps2Msg;
   bitCount = 0;
   sendBits = 12;
   setBits = 0;

@@ -3,7 +3,7 @@
 
 KeyReport keyReport;
 KeyReport consumerReport;
-uint8_t media_hid_key;
+uint8_t mediaHidKey;
 
 volatile boolean bluetooth=true;
 volatile boolean usb=true;
@@ -14,16 +14,16 @@ volatile boolean usb=true;
  * Up to six keys can be simultanesouly pressed plus the modifier keys
  * 
  */
-void report_add(uint8_t k) {
+void report_add(uint8_t hidKey) {
   uint8_t i;
-  if (k >= HID_LEFT_CTRL) {
-    keyReport.modifiers |= 1 << (k - HID_LEFT_CTRL);
-  } else if (keyReport.keys[0] != k && keyReport.keys[1] != k &&
-             keyReport.keys[2] != k && keyReport.keys[3] != k &&
-             keyReport.keys[4] != k && keyReport.keys[5] != k) {
+  if (hidKey >= HID_LEFT_CTRL) {
+    keyReport.modifiers |= 1 << (hidKey - HID_LEFT_CTRL);
+  } else if (keyReport.keys[0] != hidKey && keyReport.keys[1] != hidKey &&
+             keyReport.keys[2] != hidKey && keyReport.keys[3] != hidKey &&
+             keyReport.keys[4] != hidKey && keyReport.keys[5] != hidKey) {
     for (i = 0; i < 6; ++i) {
       if (keyReport.keys[i] == 0) {
-        keyReport.keys[i] = k;
+        keyReport.keys[i] = hidKey;
         break;
       }
     }
@@ -33,13 +33,13 @@ void report_add(uint8_t k) {
 /**
  * Updates the key report given a key release
  */
-void report_remove(uint8_t k) {
+void report_remove(uint8_t hidKey) {
   uint8_t i;
-  if (k >= HID_LEFT_CTRL) {
-    keyReport.modifiers &= ~(1 << (k - HID_LEFT_CTRL));
+  if (hidKey >= HID_LEFT_CTRL) {
+    keyReport.modifiers &= ~(1 << (hidKey - HID_LEFT_CTRL));
   } else {
     for (i = 0; i < 6; ++i) {
-      if (keyReport.keys[i] == k) {
+      if (keyReport.keys[i] == hidKey) {
         keyReport.keys[i] = 0;
         break;
       }
@@ -78,11 +78,11 @@ void clear_modifiers() {
 /**
  * Adds the specified consumer key to the consumer key report
  */
-void consumer_add(uint8_t k) {
-  media_hid_key= k;
+void consumer_add(uint8_t hidKey) {
+  mediaHidKey= hidKey;
   consumerReport.modifiers=0x00;
   consumerReport.reserved=0x02;
-      switch (k) {
+      switch (hidKey) {
       case (HID_PLAY_PAUSE):
         consumerReport.keys[0]=0x40;
         consumerReport.keys[1]=0x00;
@@ -122,8 +122,8 @@ void consumer_add(uint8_t k) {
 /**
  * Removes the specified consumer key to the consumer key report
  */
-void consumer_remove(uint8_t k) {
-  media_hid_key= 0;
+void consumer_remove(uint8_t hidKey) {
+  mediaHidKey= 0;
   consumerReport.modifiers=0x00;  
   consumerReport.reserved=0x02;
   consumerReport.keys[0]=0x00;
@@ -153,7 +153,7 @@ void send_report() {
  */
 void send_consumer_report() {
   if (bluetooth) {
-    send_media(media_hid_key);
+    send_media(mediaHidKey);
   } 
   
   if (usb) {
@@ -190,9 +190,9 @@ String reportToString(KeyReport report) {
 /**
  * Create a two character hex string for debugging
  */
-String hex_to_str(uint8_t hex) {
-  String str = String(hex, HEX);
-  if (hex < 16) {
+String hex_to_str(uint8_t hidKey) {
+  String str = String(hidKey, HEX);
+  if (hidKey < 16) {
     str = "0" + str;
   }
   return str;
