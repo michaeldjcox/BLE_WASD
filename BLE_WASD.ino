@@ -35,21 +35,23 @@ Adafruit_BluefruitLE_SPI ble(BLUEFRUIT_SPI_CS, BLUEFRUIT_SPI_IRQ, BLUEFRUIT_SPI_
  * Initial setup
  */
 void setup() {
-  if(DEBUG){
-    Serial.begin(115200); //debuging
-    while (!Serial);  // required for Flora & Micro
-    delay(500);
-  }
-  setup_keymaps();
-  setup_PS2();
-  start_BLE(1); //use 1 to configure the bluetooth module(or press ctrl + shift + esc)
+	if (DEBUG) {
+		Serial.begin(115200); //debuging
+		// If USB connection is not there this can cause failure to start
+		while (!Serial)
+			;  // required for Flora & Micro
+		delay(500);
+	}
+	setup_keymaps();
+	setup_PS2();
+	start_BLE(1); //use 1 to configure the bluetooth module(or press ctrl + shift + esc)
 }
 
 /**
  * Main loop - repeats processing the entered PS2 keys
  */
 void loop() {
-  process_buffer();
+	process_buffer();
 }
 
 

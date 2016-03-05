@@ -146,23 +146,32 @@ void process_buffer() {
                 if (k2) {                  
                     boolean send_key = special_functions(k2, brk);
                     if (send_key) {
-                        if (brk){
-                            report_remove(k2);
-                            if (k2 == HID_NUM_LCK || k2 == HID_SCR_LCK || k2 == HID_CAPS){
-                                sendLeds = true;
-                                if (k2 == HID_NUM_LCK) {
-                                    leds ^= 2;
-                                } else if (k2 == HID_SCR_LCK) {
-                                    leds ^= 1;
-                                } else if (k2 == HID_CAPS) {
-                                    leds ^= 4;
-                                }
-                                send_msg((byte) HID_SET_RESET_LEDS);
+                          if (is_media(k2)) {    
+                            if (!brk) {
+                              consumer_add(k2);
+                            } else {
+                              consumer_remove(k2);
                             }
-                        } else {
-                            report_add(k2);
+                            send_consumer_report();                            
+                          } else {                     
+                            if (brk) {
+                              report_remove(k2);
+                              if (k2 == HID_NUM_LCK || k2 == HID_SCR_LCK || k2 == HID_CAPS){
+                                  sendLeds = true;
+                                  if (k2 == HID_NUM_LCK) {
+                                      leds ^= 2;
+                                  } else if (k2 == HID_SCR_LCK) {
+                                      leds ^= 1;
+                                  } else if (k2 == HID_CAPS) {
+                                      leds ^= 4;
+                                  }
+                                  send_msg((byte) HID_SET_RESET_LEDS);
+                              }
+                          } else {
+                              report_add(k2);
+                          }
+                          send_report();
                         }
-                        send_report();
                     }
                 }
 
@@ -189,6 +198,25 @@ void send_msg(uint8_t ps2Msg) {
   pinMode(DATA_PIN, OUTPUT);
   digitalWrite(DATA_PIN, LOW);
   interrupts();
+}
+
+/**
+ * Tests if a HID key code corresponds to a media key
+ */
+bool is_media(uint8_t hidKey) {
+  
+  switch (hidKey) {
+    case (HID_PLAY_PAUSE):
+    case (HID_STOP):
+    case (HID_NEXT_TRACK):
+    case (HID_PREV_TRACK):
+    case (HID_VOL_UP):
+    case (HID_VOL_DWN):
+    case (HID_MUTE):
+      return true;
+      break;
+  }
+  return false;
 }
 
 /**

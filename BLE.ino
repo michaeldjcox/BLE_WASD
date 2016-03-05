@@ -86,6 +86,8 @@ void send_media(uint8_t hidKey) {
     case (HID_MUTE):
       str += "MUTE";
       break;
+    default: 
+     return;
   }
   ble.println(str);
 }

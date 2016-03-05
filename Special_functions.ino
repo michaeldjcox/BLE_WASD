@@ -37,38 +37,10 @@ bool special_functions(uint8_t hidKey, bool brk) {
     return 0;
   }
 
-  if (is_media(hidKey)) {    
-    if (!brk) {
-      consumer_add(hidKey);
-    } else {
-      consumer_remove(hidKey);
-    }
-    send_consumer_report();
-    return 0;
-  }
-
   //remap keypad to work as T9 keyboard...
   
   return 1;
   
 }
 
-/**
- * Tests if a HID key code corresponds to a media key
- */
-bool is_media(uint8_t hidKey) {
-  
-  switch (hidKey) {
-    case (HID_PLAY_PAUSE):
-    case (HID_STOP):
-    case (HID_NEXT_TRACK):
-    case (HID_PREV_TRACK):
-    case (HID_VOL_UP):
-    case (HID_VOL_DWN):
-    case (HID_MUTE):
-      return true;
-      break;
-  }
-  return false;
-}
 
