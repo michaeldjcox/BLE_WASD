@@ -205,11 +205,13 @@ void switch_mode() {
   if (bluetooth) {
     bluetooth=false;
     stop_BLE();
+    clear_modifiers();
     Keyboard.begin();
     usb=true;    
   } else {
     usb=false;
     Keyboard.end();
+    clear_modifiers();
     start_BLE(0); 
     bluetooth=true;
   }
@@ -218,7 +220,7 @@ void switch_mode() {
 /**
  * Performs a hard reset for the current mode - USB or bluetooth
  */
-void reset() {
+void reconfigure() {
   if (bluetooth) {
     bluetooth=false;
     stop_BLE();

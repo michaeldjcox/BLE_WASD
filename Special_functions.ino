@@ -17,16 +17,14 @@
 bool special_functions(uint8_t hidKey, bool brk) {
 
   //reset modifiers - just to clean up every now and then
-  if (hidKey == HID_ENTER && brk) {  
-    if (!brk) {
-        clear_modifiers();
-    }
+  if (hidKey == HID_ENTER) {  
+     clear_modifiers();
   }
 
   //reconfigure keyboard
   if(hidKey == HID_ESC && is_control_shift()){
     if (!brk) {
-        reset();        
+        reconfigure();        
     }
     return 0;
   }
