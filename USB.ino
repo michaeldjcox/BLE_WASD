@@ -11,7 +11,7 @@ volatile boolean usb=false;
 /**
  * Updates the key report given a key press
  * 
- * Up to six keys can be simultanesouly pressed plus the modifier keys
+ * Up to six keys can be simultaneously pressed plus the modifier keys
  * 
  */
 void report_add(uint8_t hidKey) {
