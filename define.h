@@ -192,7 +192,6 @@
 #define HID_RIGHT_SHIFT         0xE5 //Keyboard RightShift
 #define HID_RIGHT_ALT           0xE6 //Keyboard RightAlt
 #define HID_RIGHT_GUI           0xE7 //Keyboard Right GUI
-#define HID_SET_RESET_LEDS      0xED //Set the keyboard LEDs
 
 
 /**
@@ -317,6 +316,8 @@
 
 #define PS2_PAUSE_SEQUENCE      0xE1 // 0xE11477E10F014F077
 #define PS2_PAUSE_KEY_FAKE      0x6D
+
+#define PS2_SET_RESET_LEDS      0xED //Set the keyboard LEDs
 
 /**
  * Arrays for storing the key mapping from PS2 to HID

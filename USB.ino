@@ -89,8 +89,8 @@ void clear_all() {
 	keyReport.keys[4] = 0x00;
 	keyReport.keys[5] = 0x00;
 	send_report();
-	send_consumer_report();
 	consumer_remove(0);
+	send_consumer_report();
 }
 
 /**
