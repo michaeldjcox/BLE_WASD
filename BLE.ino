@@ -11,9 +11,9 @@ void start_BLE(bool reset) {
 
   if (reset) {
     /* Initialise the module */
-    if(DEBUG){
-       Serial.print(F("Initialising the Bluefruit LE module: "));
-       Serial.println(F("Performing a factory reset: "));
+    if (DEBUG) {
+      Serial.print(F("Initialising the Bluefruit LE module: "));
+      Serial.println(F("Performing a factory reset: "));
     }
     ble.factoryReset();
 
@@ -26,18 +26,18 @@ void start_BLE(bool reset) {
     ble.println("AT+GAPDEVNAME=BLE_WASD");
 
     /* Enable HID Service */
-    if(DEBUG){
+    if (DEBUG) {
       Serial.println(F("Enable HID Service (including Keyboard): "));
     }
     if (! ble.sendCommandCheckOK(F( "AT+BleKeyboardEn=On"  ))) {
-      if(DEBUG){
+      if (DEBUG) {
         Serial.println(F("Could not enable Keyboard"));
       }
     }
 
     /* Add or remove service requires a reset */
     if (! ble.reset() ) {
-      if(DEBUG){
+      if (DEBUG) {
         Serial.println(F("Couldn't reset??"));
       }
     }
@@ -54,9 +54,9 @@ void stop_BLE() {
 /**
  * Sends the key report over BLE
  */
-void send_report(KeyReport report) {  
-    String cmd = "AT+BLEKEYBOARDCODE=" + report_to_string(report);
-    ble.println(cmd);  
+void send_report(KeyReport report) {
+  String cmd = "AT+BLEKEYBOARDCODE=" + report_to_string(report);
+  ble.println(cmd);
 }
 
 /**
@@ -86,8 +86,8 @@ void send_media(uint8_t hidKey) {
     case (HID_MUTE):
       str += "MUTE";
       break;
-    default: 
-     return;
+    default:
+      return;
   }
   ble.println(str);
 }

@@ -4,11 +4,11 @@
  */
 String report_to_string(KeyReport report) {
   String cmd = hex_to_str(report.modifiers) + "-"
-      + hex_to_str(report.reserved) + "-" + hex_to_str(report.keys[0])
-      + "-" + hex_to_str(report.keys[1]) + "-"
-      + hex_to_str(report.keys[2]) + "-" + hex_to_str(report.keys[3])
-      + "-" + hex_to_str(report.keys[4]) + "-"
-      + hex_to_str(report.keys[5]);
+               + hex_to_str(report.reserved) + "-" + hex_to_str(report.keys[0])
+               + "-" + hex_to_str(report.keys[1]) + "-"
+               + hex_to_str(report.keys[2]) + "-" + hex_to_str(report.keys[3])
+               + "-" + hex_to_str(report.keys[4]) + "-"
+               + hex_to_str(report.keys[5]);
   return cmd;
 }
 

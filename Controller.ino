@@ -1,5 +1,4 @@
-// Stores the parts of the USB HID key command
-
+// Stores the state of the cable / bluetooth switch
 volatile boolean bluetooth = true;
 volatile boolean usb = false;
 
@@ -7,10 +6,10 @@ volatile boolean usb = false;
  * Sends the current key report either over bluetooth or USB cable
  */
 void send_key_report() {
+  KeyReport keyReport = getKeyReport();
   if (bluetooth) {
     send_report(keyReport);
-  } else
-  if (usb) {
+  } else if (usb) {    
     log_key_report(keyReport);
     Keyboard.sendReport(&keyReport);
   } else {
@@ -22,10 +21,11 @@ void send_key_report() {
  * Sends the current consumer key reports either over bluetooth or USB cable
  */
 void send_consumer_report() {
+  KeyReport consumerReport = getConsumerReport();
+  uint8_t mediaHidKey = getMediaHidKey();
   if (bluetooth) {
     send_media(mediaHidKey);
-  } else
-  if (usb) {
+  } else if (usb) {    
     log_key_report(consumerReport);
     Keyboard.sendReport(&consumerReport);
   } else {
@@ -48,42 +48,42 @@ void clear_all() {
  * Switches mode from bluetooth to USB and vice versa
  */
 void switch_mode() {
-	if (bluetooth) {
-		clear_all();
-		bluetooth = false;
-		clear_all();
-		stop_BLE();
-		Keyboard.begin();
-		usb = true;
-	} else {
-		clear_all();
-		usb = false;
-		clear_all();
-		Keyboard.end();
-		start_BLE(0);
-		bluetooth = true;
-	}
+  if (bluetooth) {
+    clear_all();
+    bluetooth = false;
+    clear_all();
+    stop_BLE();
+    Keyboard.begin();
+    usb = true;
+  } else {
+    clear_all();
+    usb = false;
+    clear_all();
+    Keyboard.end();
+    start_BLE(0);
+    bluetooth = true;
+  }
 }
 
 /**
  * Performs a hard reset for the current mode - USB or bluetooth
  */
 void reconfigure() {
-	if (bluetooth) {
-		clear_all();
-		bluetooth = false;
-		clear_all();
-		stop_BLE();
-		start_BLE(1);
-		bluetooth = true;
-	} else {
-		clear_all();
-		usb = false;
-		clear_all();
-		Keyboard.end();
-		Keyboard.begin();
-		usb = true;
-	}
+  if (bluetooth) {
+    clear_all();
+    bluetooth = false;
+    clear_all();
+    stop_BLE();
+    start_BLE(1);
+    bluetooth = true;
+  } else {
+    clear_all();
+    usb = false;
+    clear_all();
+    Keyboard.end();
+    Keyboard.begin();
+    usb = true;
+  }
 }
 
 

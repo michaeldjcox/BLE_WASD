@@ -5,22 +5,22 @@
 #include "define.h"
 
 #if not defined (_VARIANT_ARDUINO_DUE_X_) && not defined (_VARIANT_ARDUINO_ZERO_)
-  #include <SoftwareSerial.h>
+#include <SoftwareSerial.h>
 #endif
 
 /**
  * BLE WASD Keyboard V2
- * 
+ *
  * Daniel Nugent
  * Dorian Rudolf
  * Michael Cox
- * 
+ *
  * This program uses an adafruit BLE + Micro microcontroller to decode PS2, remap the scan codes to HID, and send over bluetooth GAT
  * Additional parts include the the tricket lipo backpack, WASD code keyboard, microusb male, and 3.7v batteries
- * 
+ *
  * Ctrl + Shift + esc will reconfigure the keyboard
  *    -Use on first use or if the bluetooth module freezes or changes name
- * 
+ *
  * Make sure you keyboard can run on 3.3v or make sure you can provide  it with 5v
  *
  */
@@ -35,23 +35,23 @@ Adafruit_BluefruitLE_SPI ble(BLUEFRUIT_SPI_CS, BLUEFRUIT_SPI_IRQ, BLUEFRUIT_SPI_
  * Initial setup
  */
 void setup() {
-	if (DEBUG) {
-		Serial.begin(115200); //debuging
-		// If USB connection is not there this can cause failure to start
-		while (!Serial)
-			;  // required for Flora & Micro
-		delay(500);
-	}
-	setup_keymaps();
-	setup_PS2();
-	start_BLE(1); //use 1 to configure the bluetooth module(or press ctrl + shift + esc)
+  if (DEBUG) {
+    Serial.begin(115200); //debuging
+    // If USB connection is not there this can cause failure to start
+    while (!Serial)
+      ;  // required for Flora & Micro
+    delay(500);
+  }
+  setup_keymaps();
+  setup_PS2();
+  start_BLE(1); //use 1 to configure the bluetooth module(or press ctrl + shift + esc)
 }
 
 /**
  * Main loop - repeats processing the entered PS2 keys
  */
 void loop() {
-	process_buffer();
+  process_buffer();
 }
 
 
