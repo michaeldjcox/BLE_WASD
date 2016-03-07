@@ -133,7 +133,7 @@ void process_buffer() {
 			} else if (ps2Key == PS2_LED_ACK) {
 				if (sendLeds) {
 					sendLeds = false;
-					send_msg(leds);
+					send_ps2_msg(leds);
 				}
 			} else {
 				if (ps2Key == PS2_PAUSE_SEQUENCE) {
@@ -141,7 +141,7 @@ void process_buffer() {
 					skip = 7;
 					brk = true;
 					report_add(hidKey);
-					send_report();
+					send_key_report();
 				} else {
 					hidKey =
 							ext ? PS2Long_to_HID_keymap[ps2Key] : PS2_to_HID_keymap[ps2Key];
@@ -171,12 +171,12 @@ void process_buffer() {
 									} else if (hidKey == HID_CAPS) {
 										leds ^= 4;
 									}
-									send_msg((byte) PS2_SET_RESET_LEDS);
+									send_ps2_msg((byte) PS2_SET_RESET_LEDS);
 								}
 							} else {
 								report_add(hidKey);
 							}
-							send_report();
+							send_key_report();
 						}
 					}
 				}
@@ -191,7 +191,7 @@ void process_buffer() {
 /**
  * Sends a message up to the keyboard in order to set LEDs
  */
-void send_msg(uint8_t ps2Msg) {
+void send_ps2_msg(uint8_t ps2Msg) {
 	noInterrupts();
 	pinMode(CLK_PIN, OUTPUT);
 	digitalWrite(CLK_PIN, LOW);
