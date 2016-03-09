@@ -9,7 +9,7 @@ void send_key_report() {
   KeyReport keyReport = getKeyReport();
   if (bluetooth) {
     send_report(keyReport);
-  } else if (usb) {    
+  } else if (usb) {
     log_key_report(keyReport);
     Keyboard.sendReport(&keyReport);
   } else {
@@ -25,7 +25,7 @@ void send_consumer_report() {
   uint8_t mediaHidKey = getMediaHidKey();
   if (bluetooth) {
     send_media(mediaHidKey);
-  } else if (usb) {    
+  } else if (usb) {
     log_key_report(consumerReport);
     Keyboard.sendReport(&consumerReport);
   } else {
@@ -83,6 +83,20 @@ void reconfigure() {
     Keyboard.end();
     Keyboard.begin();
     usb = true;
+  }
+}
+
+void start_keyboard() {
+  if (bluetooth) {
+    if (DEBUG) {
+      Serial.println(F("Starting as Bluetooth keyboard"));
+    }
+    start_BLE(1);
+  } else {
+    if (DEBUG) {
+      Serial.println(F("Starting as USB keyboard"));
+    }
+    Keyboard.begin();
   }
 }
 

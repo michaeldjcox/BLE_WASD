@@ -20,6 +20,7 @@ String hex_to_str(uint8_t hidKey) {
   if (hidKey < 16) {
     str = "0" + str;
   }
+  str.toUpperCase();
   return str;
 }
 
