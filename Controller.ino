@@ -49,6 +49,9 @@ void clear_all() {
  */
 void switch_mode() {
   if (bluetooth) {
+    if (DEBUG) {
+      Serial.println(F("Switching to keyboard"));
+    }
     clear_all();
     bluetooth = false;
     clear_all();
@@ -56,6 +59,9 @@ void switch_mode() {
     Keyboard.begin();
     usb = true;
   } else {
+    if (DEBUG) {
+      Serial.println(F("Switching to bluetooth"));
+    }
     clear_all();
     usb = false;
     clear_all();
@@ -70,6 +76,9 @@ void switch_mode() {
  */
 void reconfigure() {
   if (bluetooth) {
+    if (DEBUG) {
+      Serial.println(F("Reconfiguring bluetooth"));
+    }
     clear_all();
     bluetooth = false;
     clear_all();
@@ -77,6 +86,9 @@ void reconfigure() {
     start_BLE(1);
     bluetooth = true;
   } else {
+    if (DEBUG) {
+      Serial.println(F("Reconfiguring keyboard"));
+    }
     clear_all();
     usb = false;
     clear_all();
