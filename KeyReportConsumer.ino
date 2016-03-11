@@ -11,33 +11,33 @@ void consumer_add(uint8_t hidKey) {
   consumerReport.reserved = 0x02;
   switch (hidKey) {
     case (HID_PLAY_PAUSE):
-      consumerReport.keys[0] = 0x40;
-      consumerReport.keys[1] = 0x00;
+      consumerReport.keys[0] = 0x40;// 0000 0100 0000 0000
+      consumerReport.keys[1] = 0x00;// 0x800? 
       break;
     case (HID_STOP):
-      consumerReport.keys[0] = 0x00;
-      consumerReport.keys[1] = 0x10;
+      consumerReport.keys[0] = 0x00;// 0000 0000 0001 0000
+      consumerReport.keys[1] = 0x10;//0x400 ?
       break;
     case (HID_NEXT_TRACK):
-      consumerReport.keys[0] = 0x00;
-      consumerReport.keys[1] = 0x02;
+      consumerReport.keys[0] = 0x00;// 0000 0000 0000 0010
+      consumerReport.keys[1] = 0x02;// 0x100
       break;
     case (HID_PREV_TRACK):
-      consumerReport.keys[0] = 0x00;
-      consumerReport.keys[1] = 0x04;
+      consumerReport.keys[0] = 0x00;// 0000 0000 0000 1000
+      consumerReport.keys[1] = 0x04;// 0x200
       break;
     case (HID_VOL_UP):
-      consumerReport.keys[0] = 0x10;
-      consumerReport.keys[1] = 0x00;
+      consumerReport.keys[0] = 0x10;// 0001 0000 0000 0000
+      consumerReport.keys[1] = 0x00;// 0x10
       break;
     case (HID_VOL_DWN):
-      consumerReport.keys[0] = 0x20;
-      consumerReport.keys[1] = 0x00;
+      consumerReport.keys[0] = 0x20;// 0010 0000 0000 0000
+      consumerReport.keys[1] = 0x00;// 0x20
       break;
     case (HID_MUTE):
       // Don't know this one...
-      consumerReport.keys[0] = 0x00;
-      consumerReport.keys[1] = 0x00;
+      consumerReport.keys[0] = 0x00;// 0000 0000 0000 0000
+      consumerReport.keys[1] = 0x00;// 0x40
       break;
   }
   consumerReport.keys[2] = 0x00;
