@@ -34,17 +34,22 @@ void send_consumer_report() {
   }
 }
 
-boolean playing= false;
+boolean playing = false;
 
 void send_usb_media(uint8_t hidKey) {
+  if (DEBUG) {
+    Serial.println("SENDING OVER REMOTE");
+  }
   switch (hidKey) {
     case (HID_PLAY_PAUSE):
-    if (playing) {
-      Remote.pause();
-    } else {
-      Remote.play();
-     }
-    
+      if (playing) {
+        Remote.pause();
+        playing = false;
+      } else {
+        Remote.play();
+        playing = true;
+      }
+
       break;
     case (HID_STOP):
       Remote.stop();
@@ -62,7 +67,7 @@ void send_usb_media(uint8_t hidKey) {
       Remote.decrease();
       break;
     case (HID_MUTE):
-    Remote.mute();
+      Remote.mute();
       break;
     default:
       return;
