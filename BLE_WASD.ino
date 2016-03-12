@@ -30,8 +30,6 @@
 /* ...hardware SPI, using SCK/MOSI/MISO hardware SPI pins and then user selected CS/IRQ/RST */
 Adafruit_BluefruitLE_SPI ble(BLUEFRUIT_SPI_CS, BLUEFRUIT_SPI_IRQ, BLUEFRUIT_SPI_RST);
 
-static char buffer2[BUFFER_SIZE+1];
-
 /**
  * Initial setup
  */
@@ -52,53 +50,7 @@ void setup() {
  * Main loop - repeats processing the entered PS2 keys
  */
 void loop() {
-  if (FAKE) {
-    uint8_t count = getUserInput(buffer2, 20);
-    if (count) {
-      Serial.print("Got: ");
-      Serial.println(buffer2);
-      for (int i = 0; i < count; ++i) {
-         uint8_t ps2Key = ASCII_to_PS2_keymap[buffer2[i]];   
-         uint8_t modifier = ASCII_to_modifier_keymap[buffer2[i]];  
-         if (modifier) {
-            add_to_buffer(modifier);
-         }
-         if (ps2Key) {
-            add_to_buffer(ps2Key);
-            add_to_buffer(PS2_RELEASE);
-            add_to_buffer(ps2Key);
-         }
-         if (modifier) {
-            add_to_buffer(PS2_RELEASE);
-            add_to_buffer(modifier);
-         }
-      }
-    }
-  }
+  test_input();
   process_buffer();
 }
-
-uint8_t getUserInput(char buffer2[], uint8_t maxSize)
-{
-  // timeout in 100 milliseconds
-  TimeoutTimer timeout(100);
-
-  memset(buffer2, 0, maxSize);
-  while( (!Serial.available()) && !timeout.expired() ) { delay(1); }
-
-  if ( timeout.expired() ) return false;
-
-  delay(2);
-  uint8_t count=0;
-  do
-  {
-    count += Serial.readBytes(buffer2+count, maxSize);
-    delay(2);
-  } while( (count < maxSize) && (Serial.available()) );
-
-  return count;
-}
-
-
-
 
