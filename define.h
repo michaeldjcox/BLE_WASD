@@ -1,7 +1,7 @@
 
 #define DEBUG 0
 
-#define FAKE 1
+#define FAKE 0
 
 /**
  * Size of buffer for key strokes
