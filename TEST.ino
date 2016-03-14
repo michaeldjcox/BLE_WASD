@@ -2,10 +2,10 @@ static char inputBuffer[BUFFER_SIZE + 1];
 
 void test_input() {
   if (FAKE) {
-    uint8_t count = get_test_input(inputBuffer, 20);
+    uint8_t count = get_test_input(inputBuffer, BUFFER_SIZE);
     if (count) {
       if (DEBUG) {
-        Serial.print("Test input: ");
+        Serial.print(F("Test input: "));
         Serial.println(inputBuffer);
       }
       String result = inputBuffer;

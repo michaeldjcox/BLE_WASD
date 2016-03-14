@@ -99,7 +99,7 @@ void add_to_buffer(uint8_t input) {
     head = i;
   }
   if (DEBUG) {
-    Serial.print("Raw PS2: ");
+    Serial.print(F("Raw PS2: "));
     Serial.print(input, HEX);
     Serial.print(" ");
     Serial.println(head);

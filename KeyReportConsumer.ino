@@ -1,6 +1,6 @@
 // Stores the parts of the USB HID key command
 KeyReport consumerReport;
-uint8_t mediaHidKey;
+
 
 /**
  * Adds the specified consumer key to the consumer key report

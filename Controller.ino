@@ -1,6 +1,8 @@
 // Stores the state of the cable / bluetooth switch
 volatile boolean bluetooth = true;
 volatile boolean usb = false;
+volatile uint8_t mediaHidKey;
+volatile boolean playing = false;
 
 /**
  * Sends the current key report either over bluetooth or USB cable
@@ -34,39 +36,58 @@ void send_consumer_report() {
   }
 }
 
-boolean playing = false;
-
 void send_usb_media(uint8_t hidKey) {
-  if (DEBUG) {
-    Serial.println("SENDING OVER REMOTE");
-  }
   switch (hidKey) {
     case (HID_PLAY_PAUSE):
       if (playing) {
+        if (DEBUG) {
+          Serial.println(F("Remote->Pause"));
+        }
         Remote.pause();
         playing = false;
       } else {
+        if (DEBUG) {
+          Serial.println(F("Remote->Play"));
+        }
         Remote.play();
         playing = true;
       }
 
       break;
     case (HID_STOP):
+      if (DEBUG) {
+        Serial.println(F("Remote->Stop"));
+      }
       Remote.stop();
       break;
     case (HID_NEXT_TRACK):
+      if (DEBUG) {
+        Serial.println(F("Remote->Next"));
+      }
       Remote.next();
       break;
     case (HID_PREV_TRACK):
+      if (DEBUG) {
+        Serial.println(F("Remote->Prev"));
+      }
       Remote.previous();
       break;
     case (HID_VOL_UP):
+      if (DEBUG) {
+        Serial.println(F("Remote->VolUp"));
+      }
       Remote.increase();
       break;
     case (HID_VOL_DWN):
+      if (DEBUG) {
+        Serial.println(F("Remote->VolDwn"));
+      }
       Remote.decrease();
       break;
     case (HID_MUTE):
+      if (DEBUG) {
+        Serial.println(F("Remote->Mute"));
+      }
       Remote.mute();
       break;
     default:
