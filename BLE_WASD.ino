@@ -41,6 +41,9 @@ void setup() {
       ;  // required for Flora & Micro
     delay(500);
   }
+  if (TEST) {
+    setup_test_keymaps();
+  }
   setup_keymaps();
   setup_PS2();
   start_keyboard();
@@ -50,7 +53,9 @@ void setup() {
  * Main loop - repeats processing the entered PS2 keys
  */
 void loop() {
-  test_input();
+  if (TEST) {
+    test_input();
+  }
   process_buffer();
 }
 

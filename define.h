@@ -1,7 +1,7 @@
 
 #define DEBUG 1
 
-#define FAKE 1
+#define TEST 1
 
 /**
  * Size of buffer for key strokes
@@ -327,10 +327,6 @@
 
 typedef unsigned char uint8_t;
 
-uint8_t PS2_to_HID_keymap[255];
-uint8_t PS2Long_to_HID_keymap[255];
 
-uint8_t ASCII_to_PS2_keymap[255];
-uint8_t ASCII_to_modifier_keymap[255];
 
 
