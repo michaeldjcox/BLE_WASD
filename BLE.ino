@@ -48,6 +48,7 @@ void start_BLE(bool reset) {
  * Stops bluetooth
  */
 void stop_BLE() {
+  ble.disconnect();
   ble.end();
 }
 
