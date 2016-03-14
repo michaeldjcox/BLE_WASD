@@ -174,7 +174,11 @@ const u8 _hidReportDescriptor[] = {
     0x95, 0x01,                    //	Report Count (1)
     0x81, 0x06,                    //	Input (Data, Variable, Relative)
 
-    0x95, 0x06,                    //	Report Count (6) Number of bits remaining in byte
+    0x09, 0xcd,                    //	Usage (Play/Pause)
+    0x95, 0x01,                    //	Report Count (1)
+    0x81, 0x06,                    //	Input (Data, Variable, Relative)
+
+    0x95, 0x05,                    //	Report Count (5) Number of bits remaining in byte
     0x81, 0x07,                    //	Input (Constant, Variable, Relative) 
     0xc0                           //	End Collection
 
@@ -660,6 +664,14 @@ void Remote_::rewind(void)
 	u8 m[2];
 	m[0] = 0;
 	m[1] = REMOTE_REWIND >> 8;
+	HID_SendReport(4,m,2);
+}
+
+void Remote_::playpause(void)
+{
+	u8 m[2];
+	m[0] = 0;
+	m[1] = REMOTE_PLAY_PAUSE >> 8;
 	HID_SendReport(4,m,2);
 }
  

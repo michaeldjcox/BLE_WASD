@@ -203,7 +203,8 @@ extern Keyboard_ Keyboard;
 #define REMOTE_PREVIOUS 128
 #define REMOTE_FAST_FORWARD 256
 #define REMOTE_REWIND 512
- 
+#define REMOTE_PLAY_PAUSE 1024
+
 class Remote_
 {
 private:
@@ -218,6 +219,7 @@ public:
 	void mute(void);
  
 	// Playback
+	void playpause(void);
 	void play(void);
 	void pause(void);
 	void stop(void);

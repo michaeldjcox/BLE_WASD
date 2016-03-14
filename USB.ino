@@ -3,7 +3,7 @@
  */
 
 // Traces state of play/pause - this could get out of sync
-volatile boolean playing = false;
+//volatile boolean playing = false;
 
  /**
   * Starts USB 
@@ -35,20 +35,23 @@ void send_usb_report(KeyReport report) {
 void send_usb_media(uint8_t hidKey) {
   switch (hidKey) {
     case (HID_PLAY_PAUSE):
-      if (playing) {
-        if (DEBUG) {
-          Serial.println(F("Remote->Pause"));
-        }
-        Remote.pause();
-        playing = false;
-      } else {
-        if (DEBUG) {
-          Serial.println(F("Remote->Play"));
-        }
-        Remote.play();
-        playing = true;
+//      if (playing) {
+//        if (DEBUG) {
+//          Serial.println(F("Remote->Pause"));
+//        }
+//        Remote.pause();
+//        playing = false;
+//      } else {
+//        if (DEBUG) {
+//          Serial.println(F("Remote->Play"));
+//        }
+//        Remote.play();
+//        playing = true;
+//      }
+      if (DEBUG) {
+        Serial.println(F("Remote->PlayPause"));
       }
-
+      Remote.playpause();
       break;
     case (HID_STOP):
       if (DEBUG) {
