@@ -54,15 +54,15 @@ void stop_BLE() {
 /**
  * Sends the key report over BLE
  */
-void send_report(KeyReport report) {
+void send_ble_report(KeyReport report) {
   String cmd = "AT+BLEKEYBOARDCODE=" + report_to_string(report);
   ble.println(cmd);
 }
 
 /**
- * Sends a media control key (rather than the HID key code)
+ * Sends a media control (rather than the HID key code)
  */
-void send_media(uint8_t hidKey) {
+void send_ble_media(uint8_t hidKey) {
   String str = "AT+BLEHIDCONTROLKEY=";
   switch (hidKey) {
     case (HID_PLAY_PAUSE):

@@ -159,11 +159,8 @@ void process_buffer() {
           if (send_key) {
             if (is_media(hidKey)) {
               if (!brk) {
-                consumer_add(hidKey);
-              } else {
-                consumer_remove(hidKey);
+                send_media_control(hidKey);
               }
-              send_consumer_report();
             } else {
               if (brk) {
                 report_remove(hidKey);

@@ -1,8 +1,6 @@
 // Stores the state of the cable / bluetooth switch
 volatile boolean bluetooth = true;
 volatile boolean usb = false;
-volatile uint8_t mediaHidKey;
-volatile boolean playing = false;
 
 /**
  * Sends the current key report either over bluetooth or USB cable
@@ -10,10 +8,9 @@ volatile boolean playing = false;
 void send_key_report() {
   KeyReport keyReport = getKeyReport();
   if (bluetooth) {
-    send_report(keyReport);
+    send_ble_report(keyReport);
   } else if (usb) {
-    log_key_report(keyReport);
-    Keyboard.sendReport(&keyReport);
+    send_usb_report(keyReport);
   } else {
     clear_key_report();
   }
@@ -22,80 +19,13 @@ void send_key_report() {
 /**
  * Sends the current consumer key reports either over bluetooth or USB cable
  */
-void send_consumer_report() {
-  KeyReport consumerReport = getConsumerReport();
-  uint8_t mediaHidKey = getMediaHidKey();
+void send_media_control(uint8_t mediaHidKey) {
   if (bluetooth) {
-    send_media(mediaHidKey);
+    send_ble_media(mediaHidKey);
   } else if (usb) {
     send_usb_media(mediaHidKey);
-    //log_key_report(consumerReport);
-    //Keyboard.sendReport(&consumerReport);
-  } else {
-    clear_consumer_report();
   }
 }
-
-void send_usb_media(uint8_t hidKey) {
-  switch (hidKey) {
-    case (HID_PLAY_PAUSE):
-      if (playing) {
-        if (DEBUG) {
-          Serial.println(F("Remote->Pause"));
-        }
-        Remote.pause();
-        playing = false;
-      } else {
-        if (DEBUG) {
-          Serial.println(F("Remote->Play"));
-        }
-        Remote.play();
-        playing = true;
-      }
-
-      break;
-    case (HID_STOP):
-      if (DEBUG) {
-        Serial.println(F("Remote->Stop"));
-      }
-      Remote.stop();
-      break;
-    case (HID_NEXT_TRACK):
-      if (DEBUG) {
-        Serial.println(F("Remote->Next"));
-      }
-      Remote.next();
-      break;
-    case (HID_PREV_TRACK):
-      if (DEBUG) {
-        Serial.println(F("Remote->Prev"));
-      }
-      Remote.previous();
-      break;
-    case (HID_VOL_UP):
-      if (DEBUG) {
-        Serial.println(F("Remote->VolUp"));
-      }
-      Remote.increase();
-      break;
-    case (HID_VOL_DWN):
-      if (DEBUG) {
-        Serial.println(F("Remote->VolDwn"));
-      }
-      Remote.decrease();
-      break;
-    case (HID_MUTE):
-      if (DEBUG) {
-        Serial.println(F("Remote->Mute"));
-      }
-      Remote.mute();
-      break;
-    default:
-      return;
-  }
-}
-
-
 
 /**
  * Clears all currently set modifiers - not sure if this is really needed
@@ -104,8 +34,6 @@ void clear_all() {
   clear_key_report();
   send_key_report();
   send_ps2_msg((byte) PS2_SET_RESET_LEDS);
-  clear_consumer_report();
-  send_consumer_report();
 }
 
 /**
@@ -114,24 +42,22 @@ void clear_all() {
 void switch_mode() {
   if (bluetooth) {
     if (DEBUG) {
-      Serial.println(F("Switching to keyboard"));
+      Serial.println(F("Switching to USB keyboard"));
     }
     clear_all();
     bluetooth = false;
     clear_all();
     stop_BLE();
-    Keyboard.begin();
-    Remote.begin();
+    start_USB();
     usb = true;
   } else {
     if (DEBUG) {
-      Serial.println(F("Switching to bluetooth"));
+      Serial.println(F("Switching to Bluetooth keyboard"));
     }
     clear_all();
     usb = false;
     clear_all();
-    Keyboard.end();
-    Remote.end();
+    stop_USB();
     start_BLE(0);
     bluetooth = true;
   }
@@ -143,7 +69,7 @@ void switch_mode() {
 void reconfigure() {
   if (bluetooth) {
     if (DEBUG) {
-      Serial.println(F("Reconfiguring bluetooth"));
+      Serial.println(F("Reconfiguring Bluetooth keyboard"));
     }
     clear_all();
     bluetooth = false;
@@ -153,15 +79,13 @@ void reconfigure() {
     bluetooth = true;
   } else {
     if (DEBUG) {
-      Serial.println(F("Reconfiguring keyboard"));
+      Serial.println(F("Reconfiguring USB keyboard"));
     }
     clear_all();
     usb = false;
     clear_all();
-    Remote.end();
-    Keyboard.end();
-    Remote.begin();
-    Keyboard.begin();
+    stop_USB();
+    start_USB();
     usb = true;
   }
 }
@@ -176,7 +100,7 @@ void start_keyboard() {
     if (DEBUG) {
       Serial.println(F("Starting as USB keyboard"));
     }
-    Keyboard.begin();
+    start_USB();
   }
 }
 
