@@ -19,7 +19,7 @@ void test_input() {
     }
     String result = inputBuffer;
 
-    if (result.equals("PLAY")) {
+    if (result.equals("PLAYPAUSE")) {
       add_to_buffer(PS2_EXTENDED);
       add_to_buffer(PS2_PLAY_PAUSE);
       add_to_buffer(PS2_EXTENDED);
