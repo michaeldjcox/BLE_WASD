@@ -2,9 +2,6 @@
  * Functions concerned with wired mode of the keyboard
  */
 
-// Traces state of play/pause - this could get out of sync
-//volatile boolean playing = false;
-
  /**
   * Starts USB 
   */
@@ -35,19 +32,6 @@ void send_usb_report(KeyReport report) {
 void send_usb_media(uint8_t hidKey) {
   switch (hidKey) {
     case (HID_PLAY_PAUSE):
-//      if (playing) {
-//        if (DEBUG) {
-//          Serial.println(F("Remote->Pause"));
-//        }
-//        Remote.pause();
-//        playing = false;
-//      } else {
-//        if (DEBUG) {
-//          Serial.println(F("Remote->Play"));
-//        }
-//        Remote.play();
-//        playing = true;
-//      }
       if (DEBUG) {
         Serial.println(F("Remote->PlayPause"));
       }
