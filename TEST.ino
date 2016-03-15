@@ -1,104 +1,132 @@
 /**
- * Test functions that permit typing ASCII into the serial monitor and have it converted to PS2 keycodes and 
- * injected into the buffer as if a PS2 keyboard was connected to the bluefruit. 
- * 
+ * Test functions that permit typing ASCII into the serial monitor and have it converted to PS2 keycodes and
+ * injected into the buffer as if a PS2 keyboard was connected to the bluefruit.
+ *
  * This is for offline working when a suitable keyboard is not connected to the bluefruit LE micro
  */
 uint8_t ASCII_to_PS2_keymap[255];
 uint8_t ASCII_to_modifier_keymap[255];
 
 static char inputBuffer[BUFFER_SIZE + 1];
+static uint8_t count = 0;
 
-void test_input() {
+uint32_t startup_ms = 0;
 
-  uint8_t count = get_test_input(inputBuffer, BUFFER_SIZE);
-  if (count) {
-    if (DEBUG) {
-      Serial.print(F("Test input: "));
-      Serial.println(inputBuffer);
-    }
-    String result = inputBuffer;
+/**
+ * Reads ascii input from the serial comms and adds it as PS key codes to the PS2 buffer
+ */
+void test_serial_input() {
 
-    if (result.equals("PLAYPAUSE")) {
-      add_to_buffer(PS2_EXTENDED);
-      add_to_buffer(PS2_PLAY_PAUSE);
-      add_to_buffer(PS2_EXTENDED);
-      add_to_buffer(PS2_RELEASE);
-      add_to_buffer(PS2_PLAY_PAUSE);
-    } else if (result.equals("STOP")) {
-      add_to_buffer(PS2_EXTENDED);
-      add_to_buffer(PS2_STOP);
-      add_to_buffer(PS2_EXTENDED);
-      add_to_buffer(PS2_RELEASE);
-      add_to_buffer(PS2_STOP);
-    } else if (result.equals("NEXT")) {
-      add_to_buffer(PS2_EXTENDED);
-      add_to_buffer(PS2_NEXT_TRACK);
-      add_to_buffer(PS2_EXTENDED);
-      add_to_buffer(PS2_RELEASE);
-      add_to_buffer(PS2_NEXT_TRACK);
-    } else if (result.equals("PREV")) {
-      add_to_buffer(PS2_EXTENDED);
-      add_to_buffer(PS2_PREV_TRACK);
-      add_to_buffer(PS2_EXTENDED);
-      add_to_buffer(PS2_RELEASE);
-      add_to_buffer(PS2_PREV_TRACK);
-    } else if (result.equals("VOLUP")) {
-      add_to_buffer(PS2_EXTENDED);
-      add_to_buffer(PS2_VOL_UP);
-      add_to_buffer(PS2_EXTENDED);
-      add_to_buffer(PS2_RELEASE);
-      add_to_buffer(PS2_VOL_UP);
-    } else if (result.equals("VOLDOWN")) {
-      add_to_buffer(PS2_EXTENDED);
-      add_to_buffer(PS2_VOL_DWN);
-      add_to_buffer(PS2_EXTENDED);
-      add_to_buffer(PS2_RELEASE);
-      add_to_buffer(PS2_VOL_DWN);
-    } else if (result.equals("MUTE")) {
-      add_to_buffer(PS2_EXTENDED);
-      add_to_buffer(PS2_MUTE);
-      add_to_buffer(PS2_EXTENDED);
-      add_to_buffer(PS2_RELEASE);
-      add_to_buffer(PS2_MUTE);
-    } else if (result.equals("SWITCH")) {
-      add_to_buffer(PS2_LEFT_CTRL);
-      add_to_buffer(PS2_ESC);
-      add_to_buffer(PS2_RELEASE);
-      add_to_buffer(PS2_ESC);
-      add_to_buffer(PS2_RELEASE);
-      add_to_buffer(PS2_LEFT_CTRL);
-    } else if (result.equals("RESET")) {
-      add_to_buffer(PS2_LEFT_CTRL);
-      add_to_buffer(PS2_LEFT_SHIFT);
-      add_to_buffer(PS2_ESC);
-      add_to_buffer(PS2_RELEASE);
-      add_to_buffer(PS2_ESC);
-      add_to_buffer(PS2_RELEASE);
-      add_to_buffer(PS2_LEFT_SHIFT);
-      add_to_buffer(PS2_RELEASE);
-      add_to_buffer(PS2_LEFT_CTRL);
-    } else
-      for (int i = 0; i < count; ++i) {
-        uint8_t ps2Key = ASCII_to_PS2_keymap[inputBuffer[i]];
-        uint8_t modifier = ASCII_to_modifier_keymap[inputBuffer[i]];
-        if (modifier) {
-          add_to_buffer(modifier);
-        }
-        if (ps2Key) {
-          add_to_buffer(ps2Key);
-          add_to_buffer(PS2_RELEASE);
-          add_to_buffer(ps2Key);
-        }
-        if (modifier) {
-          add_to_buffer(PS2_RELEASE);
-          add_to_buffer(modifier);
-        }
-      }
+  get_test_input(inputBuffer, BUFFER_SIZE);
+  if (count > 0) {
+
+    process_test_input();
+    count = 0;
   }
 }
 
-uint8_t get_test_input(char inputBuffer[], uint8_t maxSize)
+void test_input(String input) {
+
+  input.toCharArray(inputBuffer, BUFFER_SIZE);
+  count = input.length();
+  process_test_input();
+}
+
+/**
+ * Processes some ascii characters in the input buffer
+ */
+void process_test_input() {
+  String result = inputBuffer;
+  if (DEBUG) {
+    Serial.print(F("Test input: ("));
+    Serial.print(count);
+    Serial.print(F(") "));
+    Serial.println(result);
+  }
+  if (result.equals("PLAYPAUSE")) {
+    add_to_buffer(PS2_EXTENDED);
+    add_to_buffer(PS2_PLAY_PAUSE);
+    add_to_buffer(PS2_EXTENDED);
+    add_to_buffer(PS2_RELEASE);
+    add_to_buffer(PS2_PLAY_PAUSE);
+  } else if (result.equals("STOP")) {
+    add_to_buffer(PS2_EXTENDED);
+    add_to_buffer(PS2_STOP);
+    add_to_buffer(PS2_EXTENDED);
+    add_to_buffer(PS2_RELEASE);
+    add_to_buffer(PS2_STOP);
+  } else if (result.equals("NEXT")) {
+    add_to_buffer(PS2_EXTENDED);
+    add_to_buffer(PS2_NEXT_TRACK);
+    add_to_buffer(PS2_EXTENDED);
+    add_to_buffer(PS2_RELEASE);
+    add_to_buffer(PS2_NEXT_TRACK);
+  } else if (result.equals("PREV")) {
+    add_to_buffer(PS2_EXTENDED);
+    add_to_buffer(PS2_PREV_TRACK);
+    add_to_buffer(PS2_EXTENDED);
+    add_to_buffer(PS2_RELEASE);
+    add_to_buffer(PS2_PREV_TRACK);
+  } else if (result.equals("VOLUP")) {
+    add_to_buffer(PS2_EXTENDED);
+    add_to_buffer(PS2_VOL_UP);
+    add_to_buffer(PS2_EXTENDED);
+    add_to_buffer(PS2_RELEASE);
+    add_to_buffer(PS2_VOL_UP);
+  } else if (result.equals("VOLDOWN")) {
+    add_to_buffer(PS2_EXTENDED);
+    add_to_buffer(PS2_VOL_DWN);
+    add_to_buffer(PS2_EXTENDED);
+    add_to_buffer(PS2_RELEASE);
+    add_to_buffer(PS2_VOL_DWN);
+  } else if (result.equals("MUTE")) {
+    add_to_buffer(PS2_EXTENDED);
+    add_to_buffer(PS2_MUTE);
+    add_to_buffer(PS2_EXTENDED);
+    add_to_buffer(PS2_RELEASE);
+    add_to_buffer(PS2_MUTE);
+  } else if (result.equals("SWITCH")) {
+    add_to_buffer(PS2_LEFT_CTRL);
+    add_to_buffer(PS2_ESC);
+    add_to_buffer(PS2_RELEASE);
+    add_to_buffer(PS2_ESC);
+    add_to_buffer(PS2_RELEASE);
+    add_to_buffer(PS2_LEFT_CTRL);
+  } else if (result.equals("RESET")) {
+    add_to_buffer(PS2_LEFT_CTRL);
+    add_to_buffer(PS2_LEFT_SHIFT);
+    add_to_buffer(PS2_ESC);
+    add_to_buffer(PS2_RELEASE);
+    add_to_buffer(PS2_ESC);
+    add_to_buffer(PS2_RELEASE);
+    add_to_buffer(PS2_LEFT_SHIFT);
+    add_to_buffer(PS2_RELEASE);
+    add_to_buffer(PS2_LEFT_CTRL);
+  } else {
+    for (int i = 0; i < count; ++i) {
+      uint8_t ps2Key = ASCII_to_PS2_keymap[inputBuffer[i]];
+      uint8_t modifier = ASCII_to_modifier_keymap[inputBuffer[i]];
+
+      if (modifier) {
+        add_to_buffer(modifier);
+      }
+      if (ps2Key) {
+        add_to_buffer(ps2Key);
+        add_to_buffer(PS2_RELEASE);
+        add_to_buffer(ps2Key);
+      }
+      if (modifier) {
+        add_to_buffer(PS2_RELEASE);
+        add_to_buffer(modifier);
+      }
+    }
+  }
+}
+
+/**
+ * Reads a sequence of ASCII character input over the serial interface
+ */
+void get_test_input(char inputBuffer[], uint8_t maxSize)
 {
   // timeout in 100 milliseconds
   TimeoutTimer timeout(100);
@@ -108,17 +136,26 @@ uint8_t get_test_input(char inputBuffer[], uint8_t maxSize)
     delay(1);
   }
 
-  if ( timeout.expired() ) return false;
+  if ( timeout.expired() ) return;
 
   delay(2);
-  uint8_t count = 0;
+  count = 0;
   do
   {
     count += Serial.readBytes(inputBuffer + count, maxSize);
     delay(2);
   } while ( (count < maxSize) && (Serial.available()) );
+}
 
-  return count;
+void test_hello_world() {
+  if (startup_ms == 0) {
+    startup_ms = millis();
+  }
+  uint32_t now_ms = millis();
+  if ((now_ms - startup_ms) > 10000) {
+    test_input("hello world ");
+    startup_ms  = now_ms;
+  }
 }
 
 /**
@@ -282,6 +319,15 @@ void setup_test_keymaps() {
   ASCII_to_modifier_keymap['?'] = PS2_LEFT_SHIFT;
 
   ASCII_to_PS2_keymap[' '] = PS2_SPACE;
+}
+
+void blink(uint8_t count) {
+  for (int i = 0; i < count; ++i) {
+    digitalWrite(13, HIGH);   // turn the LED on (HIGH is the voltage level)
+    delay(1000);              // wait for a second
+    digitalWrite(13, LOW);    // turn the LED off by making the voltage LOW
+    delay(1000);              // wait for a second
+  }
 }
 
 

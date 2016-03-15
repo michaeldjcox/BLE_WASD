@@ -54,8 +54,9 @@ void setup() {
  */
 void loop() {
   if (TEST) {
-    test_input();
-  }
+//        test_serial_input();
+    test_hello_world();
+  }  
   process_buffer();
 }
 
