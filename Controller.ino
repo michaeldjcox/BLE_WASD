@@ -58,7 +58,7 @@ void switch_mode() {
     usb = false;
     clear_all();
     stop_USB();
-    start_BLE(0);
+    start_BLE();
     bluetooth = true;
   }
 }
@@ -75,7 +75,8 @@ void reconfigure() {
     bluetooth = false;
     clear_all();
     stop_BLE();
-    start_BLE(1);
+    start_BLE();
+    reconfigure_BLE();
     bluetooth = true;
   } else {
     if (DEBUG) {
@@ -86,6 +87,7 @@ void reconfigure() {
     clear_all();
     stop_USB();
     start_USB();
+    reconfigure_USB();
     usb = true;
   }
 }
@@ -95,7 +97,7 @@ void start_keyboard() {
     if (DEBUG) {
       Serial.println(F("Starting as Bluetooth keyboard"));
     }
-    start_BLE(1);
+    start_BLE();
   } else {
     if (DEBUG) {
       Serial.println(F("Starting as USB keyboard"));

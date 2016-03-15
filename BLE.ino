@@ -5,11 +5,19 @@
 /**
  * Start the low energy bluetooth module
  */
-void start_BLE(bool reset) {
-
+void start_BLE() {
   ble.begin(DEBUG); //verbose on-off
+}
 
-  if (reset) {
+/**
+ * Stops bluetooth
+ */
+void stop_BLE() {
+  ble.disconnect();
+  ble.end();
+}
+
+void reconfigure_BLE() {
     /* Initialise the module */
     if (DEBUG) {
       Serial.print(F("Initialising the Bluefruit LE module: "));
@@ -40,16 +48,7 @@ void start_BLE(bool reset) {
       if (DEBUG) {
         Serial.println(F("Couldn't reset??"));
       }
-    }
-  }
-}
-
-/**
- * Stops bluetooth
- */
-void stop_BLE() {
-  ble.disconnect();
-  ble.end();
+    }  
 }
 
 /**

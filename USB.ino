@@ -19,6 +19,13 @@ void stop_USB() {
 }
 
 /**
+ * Stops USB 
+ */
+void reconfigure_USB() {
+  // Nothing to do here at the moment
+}
+
+/**
  * Sends the key report over USB
  */
 void send_usb_report(KeyReport report) {
