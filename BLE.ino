@@ -13,7 +13,9 @@ void start_BLE() {
  * Stops bluetooth
  */
 void stop_BLE() {
-  ble.disconnect();
+  if (ble.isConnected()) {
+    ble.disconnect();
+  }
   ble.end();
 }
 
