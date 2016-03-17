@@ -15,7 +15,14 @@ void start_BLE() {
 void stop_BLE() {
   if (ble.isConnected()) {
     ble.disconnect();
-  }
+    ble.println( F("AT+GAPDISCONNECT") );
+  }  
+  
+  ble.end();
+  // Doing a begin forces disconnect more reliably
+  ble.begin(DEBUG);
+  // Stop advertising so connection is not automatically restablished
+  ble.println(F("AT+GAPSTOPADV"));
   ble.end();
 }
 
@@ -33,7 +40,7 @@ void reconfigure_BLE() {
     ble.info();
 
     //rename device
-    ble.println("AT+GAPDEVNAME=BLE_WASD");
+    ble.println(F("AT+GAPDEVNAME=BLE_WASD"));
 
     /* Enable HID Service */
     if (DEBUG) {
