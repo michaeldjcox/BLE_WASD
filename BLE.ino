@@ -7,6 +7,10 @@
  */
 void start_BLE() {
   ble.begin(DEBUG); //verbose on-off
+  // Show two LEDs - a broken line = wireless
+  set_LEDs(5);
+  delay(1000);
+  clear_LEDs();
 }
 
 /**
@@ -16,8 +20,8 @@ void stop_BLE() {
   if (ble.isConnected()) {
     ble.disconnect();
     ble.println( F("AT+GAPDISCONNECT") );
-  }  
-  
+  }
+
   ble.end();
   // Doing a begin forces disconnect more reliably
   ble.begin(DEBUG);
@@ -27,37 +31,37 @@ void stop_BLE() {
 }
 
 void reconfigure_BLE() {
-    /* Initialise the module */
+  /* Initialise the module */
+  if (DEBUG) {
+    Serial.print(F("Initialising the Bluefruit LE module: "));
+    Serial.println(F("Performing a factory reset: "));
+  }
+  ble.factoryReset();
+
+  //Disable command echo from Bluefruit
+  ble.echo(false);
+
+  ble.info();
+
+  //rename device
+  ble.println(F("AT+GAPDEVNAME=BLE_WASD"));
+
+  /* Enable HID Service */
+  if (DEBUG) {
+    Serial.println(F("Enable HID Service (including Keyboard): "));
+  }
+  if (! ble.sendCommandCheckOK(F( "AT+BleKeyboardEn=On"  ))) {
     if (DEBUG) {
-      Serial.print(F("Initialising the Bluefruit LE module: "));
-      Serial.println(F("Performing a factory reset: "));
+      Serial.println(F("Could not enable Keyboard"));
     }
-    ble.factoryReset();
+  }
 
-    //Disable command echo from Bluefruit
-    ble.echo(false);
-
-    ble.info();
-
-    //rename device
-    ble.println(F("AT+GAPDEVNAME=BLE_WASD"));
-
-    /* Enable HID Service */
+  /* Add or remove service requires a reset */
+  if (! ble.reset() ) {
     if (DEBUG) {
-      Serial.println(F("Enable HID Service (including Keyboard): "));
+      Serial.println(F("Couldn't reset??"));
     }
-    if (! ble.sendCommandCheckOK(F( "AT+BleKeyboardEn=On"  ))) {
-      if (DEBUG) {
-        Serial.println(F("Could not enable Keyboard"));
-      }
-    }
-
-    /* Add or remove service requires a reset */
-    if (! ble.reset() ) {
-      if (DEBUG) {
-        Serial.println(F("Couldn't reset??"));
-      }
-    }  
+  }
 }
 
 /**

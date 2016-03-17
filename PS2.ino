@@ -2,7 +2,7 @@
  * Functions associated with PS2 communication
  */
 
-// Storage of keymaps 
+// Storage of keymaps
 uint8_t PS2_to_HID_keymap[255];
 uint8_t PS2Long_to_HID_keymap[255];
 
@@ -94,6 +94,9 @@ void ps2interrupt(void) {
   }
 }
 
+/**
+ * Adds the specified PS2 key code to the buffer
+ */
 void add_to_buffer(uint8_t input) {
   uint8_t i = head + 1;
   if (i >= BUFFER_SIZE) {
@@ -197,9 +200,25 @@ void process_buffer() {
   }
 }
 
+/**
+ * Initiates a clear of the caps/scroll/num lock LEDs
+ * 
+ * This method is used to clear the LEDs on a switch between wired and wireless
+ */
 void clear_LEDs() {
   sendLeds = true;
   leds = 0;
+  send_ps2_msg((byte) PS2_SET_RESET_LEDS);
+}
+
+/**
+ * Initiates a set of the caps/scroll/num lock LEDs
+ * 
+ * This method is used to indicate which mode wired or wireless has been entered
+ */
+void set_LEDs(uint8_t reqdLeds) {
+  sendLeds = true;
+  leds = reqdLeds;
   send_ps2_msg((byte) PS2_SET_RESET_LEDS);
 }
 

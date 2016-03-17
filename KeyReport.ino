@@ -1,3 +1,8 @@
+/*
+ * Functions for manipulating and testing the key report which will be send for either wired 
+ * or wireless use
+ */
+
 // Stores the parts of the USB HID key command
 KeyReport keyReport;
 

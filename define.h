@@ -1,7 +1,9 @@
 
 #define DEBUG 0
 
-#define TEST 0
+#define TEST_SERIAL_INPUT 0
+
+#define TEST_HELLO_WORLD 0
 
 /**
  * Size of buffer for key strokes

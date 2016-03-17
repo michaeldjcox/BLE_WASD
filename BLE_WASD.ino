@@ -9,7 +9,7 @@
 #endif
 
 /**
- * BLE WASD Keyboard V2
+ * BLE WASD Keyboard V3
  *
  * Daniel Nugent
  * Dorian Rudolf
@@ -41,7 +41,7 @@ void setup() {
       ;  // required for Flora & Micro
     delay(500);
   }
-  if (TEST) {
+  if (TEST_SERIAL_INPUT || TEST_HELLO_WORLD) {
     setup_test_keymaps();
   }
   setup_keymaps();
@@ -53,10 +53,12 @@ void setup() {
  * Main loop - repeats processing the entered PS2 keys
  */
 void loop() {
-  if (TEST) {
-        test_serial_input();
-//    test_hello_world();
-  }  
+  if (TEST_SERIAL_INPUT) {
+    test_serial_input();
+  }
+  if (TEST_HELLO_WORLD) {
+    test_hello_world();
+  }
   process_buffer();
 }
 

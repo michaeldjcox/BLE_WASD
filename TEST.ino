@@ -25,6 +25,9 @@ void test_serial_input() {
   }
 }
 
+/**
+ * Adds a ascii input string as a sequence of PS2 keycodes to the buffer
+ */
 void test_input(String input) {
 
   input.toCharArray(inputBuffer, BUFFER_SIZE);
@@ -33,7 +36,8 @@ void test_input(String input) {
 }
 
 /**
- * Processes some ascii characters in the input buffer
+ * Processes some ascii characters from the input buffer and converts to 
+ * PS2 keycodes
  */
 void process_test_input() {
   String result = inputBuffer;
@@ -125,6 +129,8 @@ void process_test_input() {
 
 /**
  * Reads a sequence of ASCII character input over the serial interface
+ * 
+ * This is useful for testing the program via the serial monitor when no PS2 keyboard is available.
  */
 void get_test_input(char inputBuffer[], uint8_t maxSize)
 {
@@ -147,6 +153,12 @@ void get_test_input(char inputBuffer[], uint8_t maxSize)
   } while ( (count < maxSize) && (Serial.available()) );
 }
 
+/**
+ * Put this in the process loop and if 10 seconds has passed since startup "hello world" 
+ * PS2 input will be injected into the buffer.
+ * 
+ * This is useful for testing detached from the serial cable when no PS2 keyboard is available.
+ */
 void test_hello_world() {
   if (startup_ms == 0) {
     startup_ms = millis();
@@ -155,6 +167,21 @@ void test_hello_world() {
   if ((now_ms - startup_ms) > 10000) {
     test_input("hello world ");
     startup_ms  = now_ms;
+  }
+}
+
+/**
+ * Allows the red LED near to the USB port to be flashed.
+ * 
+ * This was useful for diagnosing where the code had got to when debugging why 
+ * things were not working when detached from serial monitor.
+ */
+void blink(uint8_t count) {
+  for (int i = 0; i < count; ++i) {
+    digitalWrite(13, HIGH);   // turn the LED on (HIGH is the voltage level)
+    delay(1000);              // wait for a second
+    digitalWrite(13, LOW);    // turn the LED off by making the voltage LOW
+    delay(1000);              // wait for a second
   }
 }
 
@@ -319,15 +346,6 @@ void setup_test_keymaps() {
   ASCII_to_modifier_keymap['?'] = PS2_LEFT_SHIFT;
 
   ASCII_to_PS2_keymap[' '] = PS2_SPACE;
-}
-
-void blink(uint8_t count) {
-  for (int i = 0; i < count; ++i) {
-    digitalWrite(13, HIGH);   // turn the LED on (HIGH is the voltage level)
-    delay(1000);              // wait for a second
-    digitalWrite(13, LOW);    // turn the LED off by making the voltage LOW
-    delay(1000);              // wait for a second
-  }
 }
 
 

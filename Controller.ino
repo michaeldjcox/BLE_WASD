@@ -1,3 +1,8 @@
+/*
+ * Controller responsible for tracking whether we are in wired or wireless mode and routing key presses
+ * accordingly
+ */
+ 
 // Stores the state of the cable / bluetooth switch
 volatile boolean bluetooth = true;
 volatile boolean usb = false;
@@ -92,6 +97,11 @@ void reconfigure() {
   }
 }
 
+/**
+ * Method to perform the initial keyboard start
+ * 
+ * Currently this defaults to bluetooth
+ */
 void start_keyboard() {
   if (bluetooth) {
     if (DEBUG) {

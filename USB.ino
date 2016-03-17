@@ -2,24 +2,28 @@
  * Functions concerned with wired mode of the keyboard
  */
 
- /**
-  * Starts USB 
-  */
+/**
+ * Starts USB
+ */
 void start_USB() {
-    Keyboard.begin();
-    Remote.begin();
+  Keyboard.begin();
+  Remote.begin();
+  // Show three LEDs - a full line = wired
+  set_LEDs(7);
+  delay(1000);
+  clear_LEDs();
 }
 
 /**
- * Stops USB 
+ * Stops USB
  */
 void stop_USB() {
-    Keyboard.end();
-    Remote.end();  
+  Keyboard.end();
+  Remote.end();
 }
 
 /**
- * Stops USB 
+ * Stops USB
  */
 void reconfigure_USB() {
   // Nothing to do here at the moment
@@ -29,8 +33,8 @@ void reconfigure_USB() {
  * Sends the key report over USB
  */
 void send_usb_report(KeyReport report) {
-    log_key_report(keyReport);
-    Keyboard.sendReport(&keyReport);
+  log_key_report(keyReport);
+  Keyboard.sendReport(&keyReport);
 }
 
 /**
