@@ -197,6 +197,12 @@ void process_buffer() {
   }
 }
 
+void clear_LEDs() {
+  sendLeds = true;
+  leds = 0;
+  send_ps2_msg((byte) PS2_SET_RESET_LEDS);
+}
+
 /**
  * Sends a message up to the keyboard in order to set LEDs
  */

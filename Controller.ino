@@ -33,7 +33,7 @@ void send_media_control(uint8_t mediaHidKey) {
 void clear_all() {
   clear_key_report();
   send_key_report();
-  send_ps2_msg((byte) PS2_SET_RESET_LEDS);
+  clear_LEDs();
 }
 
 /**
