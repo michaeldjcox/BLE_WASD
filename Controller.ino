@@ -2,7 +2,7 @@
  * Controller responsible for tracking whether we are in wired or wireless mode and routing key presses
  * accordingly
  */
- 
+
 // Stores the state of the cable / bluetooth switch
 volatile boolean bluetooth = true;
 volatile boolean usb = false;
@@ -42,6 +42,50 @@ void clear_all() {
 }
 
 /**
+ * Starts wireless mode ensuring that we don't process key presses until we are ready
+ */
+void startup_BLE(boolean reset) {
+  start_BLE();
+  if (reset) {
+    reconfigure_BLE();
+  }
+  bluetooth = true;
+  start_PS2();
+}
+
+/**
+ * Stops wireless mode ensuring that further key presses are ignored
+ */
+void shutdown_BLE() {
+  stop_PS2();
+  clear_all();
+  bluetooth = false;
+  stop_BLE();
+}
+
+/**
+ * Starts wired mode ensuring that we don't process key presses until we are ready
+ */
+void startup_USB(boolean reset) {
+  start_USB();
+  if (reset) {
+    reconfigure_USB();
+  }
+  usb = true;
+  start_PS2();
+}
+
+/**
+ * Stops wired mode ensuring that further key presses are ignored
+ */
+void shutdown_USB() {
+  stop_PS2();
+  clear_all();
+  usb = false;
+  stop_USB();
+}
+
+/**
  * Switches mode from bluetooth to USB and vice versa
  */
 void switch_mode() {
@@ -49,22 +93,14 @@ void switch_mode() {
     if (DEBUG) {
       Serial.println(F("Switching to USB keyboard"));
     }
-    clear_all();
-    bluetooth = false;
-    clear_all();
-    stop_BLE();
-    start_USB();
-    usb = true;
+    shutdown_BLE();
+    startup_USB(false);
   } else {
     if (DEBUG) {
       Serial.println(F("Switching to Bluetooth keyboard"));
     }
-    clear_all();
-    usb = false;
-    clear_all();
-    stop_USB();
-    start_BLE();
-    bluetooth = true;
+    shutdown_USB();
+    startup_BLE(false);
   }
 }
 
@@ -76,30 +112,20 @@ void reconfigure() {
     if (DEBUG) {
       Serial.println(F("Reconfiguring Bluetooth keyboard"));
     }
-    clear_all();
-    bluetooth = false;
-    clear_all();
-    stop_BLE();
-    start_BLE();
-    reconfigure_BLE();
-    bluetooth = true;
+    shutdown_BLE();
+    startup_BLE(true);
   } else {
     if (DEBUG) {
       Serial.println(F("Reconfiguring USB keyboard"));
     }
-    clear_all();
-    usb = false;
-    clear_all();
-    stop_USB();
-    start_USB();
-    reconfigure_USB();
-    usb = true;
+    shutdown_USB();
+    startup_USB(true);
   }
 }
 
 /**
  * Method to perform the initial keyboard start
- * 
+ *
  * Currently this defaults to bluetooth
  */
 void start_keyboard() {
@@ -114,6 +140,7 @@ void start_keyboard() {
     }
     start_USB();
   }
+  start_PS2();
 }
 
 

@@ -30,6 +30,10 @@ bool brk;
 // The number of PS2 key codes we should now ignore e.g. after Pause key is pressed
 int skip;
 
+// When we switch from wireless to wired or back we will disable adding to key report or sending keys
+// But we will allow LED processing
+volatile bool enabled=false;
+
 /**
  * Set up the PS2 interface
  */
@@ -163,8 +167,10 @@ void process_buffer() {
         }
 
         if (hidKey) {
+          // Even if key reporting is disabled we still allow special functions
+          // for reset etc but do not send any keys out
           boolean send_key = special_functions(hidKey, brk);
-          if (send_key) {
+          if (send_key && enabled) {
             if (is_media(hidKey)) {
               if (!brk) {
                 send_media_control(hidKey);
@@ -220,6 +226,20 @@ void set_LEDs(uint8_t reqdLeds) {
   sendLeds = true;
   leds = reqdLeds;
   send_ps2_msg((byte) PS2_SET_RESET_LEDS);
+}
+
+/**
+ * Starts processing of key presses into the key report
+ */
+void start_PS2() {
+  enabled=true;
+}
+
+/**
+ * Stops processing of key presses into the key report
+ */
+void stop_PS2() {
+  enabled=false;
 }
 
 /**

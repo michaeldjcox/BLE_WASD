@@ -37,6 +37,7 @@ void setup() {
   if (DEBUG) {
     Serial.begin(115200); //debuging
     // If USB connection is not there this can cause failure to start
+    // DEBUG must be off when wired USB is not connected for serial comms!
     while (!Serial)
       ;  // required for Flora & Micro
     delay(500);
