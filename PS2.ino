@@ -32,7 +32,7 @@ int skip;
 
 // When we switch from wireless to wired or back we will disable adding to key report or sending keys
 // But we will allow LED processing
-volatile bool enabled=false;
+volatile bool enabled = false;
 
 /**
  * Set up the PS2 interface
@@ -208,7 +208,7 @@ void process_buffer() {
 
 /**
  * Initiates a clear of the caps/scroll/num lock LEDs
- * 
+ *
  * This method is used to clear the LEDs on a switch between wired and wireless
  */
 void clear_LEDs() {
@@ -219,7 +219,7 @@ void clear_LEDs() {
 
 /**
  * Initiates a set of the caps/scroll/num lock LEDs
- * 
+ *
  * This method is used to indicate which mode wired or wireless has been entered
  */
 void set_LEDs(uint8_t reqdLeds) {
@@ -232,14 +232,14 @@ void set_LEDs(uint8_t reqdLeds) {
  * Starts processing of key presses into the key report
  */
 void start_PS2() {
-  enabled=true;
+  enabled = true;
 }
 
 /**
  * Stops processing of key presses into the key report
  */
 void stop_PS2() {
-  enabled=false;
+  enabled = false;
 }
 
 /**

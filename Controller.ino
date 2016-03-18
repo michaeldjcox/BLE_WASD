@@ -49,6 +49,11 @@ void startup_BLE(boolean reset) {
   if (reset) {
     reconfigure_BLE();
   }
+  // Show two LEDs - a broken line = wireless
+  set_LEDs(5);
+  delay(1000);
+  clear_LEDs();
+  
   bluetooth = true;
   start_PS2();
 }
@@ -71,6 +76,11 @@ void startup_USB(boolean reset) {
   if (reset) {
     reconfigure_USB();
   }
+  // Show three LEDs - a full line = wired
+  set_LEDs(7);
+  delay(1000);
+  clear_LEDs();
+  
   usb = true;
   start_PS2();
 }

@@ -7,10 +7,6 @@
  */
 void start_BLE() {
   ble.begin(DEBUG); //verbose on-off
-  // Show two LEDs - a broken line = wireless
-  set_LEDs(5);
-  delay(1000);
-  clear_LEDs();
 }
 
 /**
