@@ -50,13 +50,12 @@ void startup_BLE(boolean reset) {
     reconfigure_BLE();
   }
   // Show two LEDs - a broken line = wireless
-  set_LEDs(5);
-  delay(1000);
-  clear_LEDs();
-  
+  flash_LEDs(5);
   bluetooth = true;
   start_PS2();
 }
+
+
 
 /**
  * Stops wireless mode ensuring that further key presses are ignored
@@ -77,10 +76,7 @@ void startup_USB(boolean reset) {
     reconfigure_USB();
   }
   // Show three LEDs - a full line = wired
-  set_LEDs(7);
-  delay(1000);
-  clear_LEDs();
-  
+  flash_LEDs(7);
   usb = true;
   start_PS2();
 }
@@ -143,14 +139,13 @@ void start_keyboard() {
     if (DEBUG) {
       Serial.println(F("Starting as Bluetooth keyboard"));
     }
-    start_BLE();
+    startup_BLE(false);
   } else {
     if (DEBUG) {
       Serial.println(F("Starting as USB keyboard"));
     }
-    start_USB();
+    startup_USB(false);
   }
-  start_PS2();
 }
 
 

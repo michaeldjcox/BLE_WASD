@@ -19,13 +19,15 @@ static volatile uint8_t sendBits, msg, bitCount, setBits;
 uint8_t leds;
 
 // Should we send the LED state to the keyboard and stop receiving for a while
-bool sendLeds;
+volatile bool sendLeds;
 
 // Has the extended PS2 mode been entered
 bool ext;
 
 // Are we in key release
 bool brk;
+
+volatile bool autoLEDclear = false;
 
 // The number of PS2 key codes we should now ignore e.g. after Pause key is pressed
 int skip;
@@ -153,6 +155,9 @@ void process_buffer() {
         if (sendLeds) {
           sendLeds = false;
           send_ps2_msg(leds);
+          if (autoLEDclear) {            
+            clear_LEDs();
+          }
         }
       } else {
         if (ps2Key == PS2_PAUSE_SEQUENCE) {
@@ -212,6 +217,7 @@ void process_buffer() {
  * This method is used to clear the LEDs on a switch between wired and wireless
  */
 void clear_LEDs() {
+  autoLEDclear = false;
   sendLeds = true;
   leds = 0;
   send_ps2_msg((byte) PS2_SET_RESET_LEDS);
@@ -226,6 +232,14 @@ void set_LEDs(uint8_t reqdLeds) {
   sendLeds = true;
   leds = reqdLeds;
   send_ps2_msg((byte) PS2_SET_RESET_LEDS);
+}
+
+/**
+ * Flashes the specified LEDs on then off
+ */
+void flash_LEDs(uint8_t reqdLeds) {
+  set_LEDs(reqdLeds);
+  autoLEDclear = true;
 }
 
 /**
@@ -258,6 +272,9 @@ void send_ps2_msg(uint8_t ps2Msg) {
   pinMode(DATA_PIN, OUTPUT);
   digitalWrite(DATA_PIN, LOW);
   interrupts();
+  if (TEST_SERIAL_INPUT) {
+    test_ps2_msg(ps2Msg);
+  }
 }
 
 /**

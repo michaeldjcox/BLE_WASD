@@ -8,10 +8,6 @@
 void start_USB() {
   Keyboard.begin();
   Remote.begin();
-  // Show three LEDs - a full line = wired
-  set_LEDs(7);
-  delay(1000);
-  clear_LEDs();
 }
 
 /**

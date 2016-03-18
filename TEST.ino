@@ -36,7 +36,38 @@ void test_input(String input) {
 }
 
 /**
- * Processes some ascii characters from the input buffer and converts to 
+ * Handles the LED message sent back to the keyboard
+ */
+void test_ps2_msg(uint8_t ps2Msg) {
+  if (ps2Msg == PS2_SET_RESET_LEDS) {
+    add_to_buffer(PS2_LED_ACK);
+  } else {
+    if (DEBUG) {
+      Serial.print(F("LEDS:"));
+      Serial.println(ps2Msg);
+      Serial.print(F("LEDS:"));
+      if (ps2Msg & 4) {
+        Serial.print(F("ON-"));
+      } else {
+        Serial.print(F("OFF-"));
+      }
+      if (ps2Msg & 2) {
+        Serial.print(F("ON-"));
+      } else {
+        Serial.print(F("OFF-"));
+      }
+      if (ps2Msg & 1) {
+        Serial.print(F("ON"));
+      } else {
+        Serial.print(F("OFF"));
+      }
+      Serial.println();
+    }
+  }
+}
+
+/**
+ * Processes some ascii characters from the input buffer and converts to
  * PS2 keycodes
  */
 void process_test_input() {
@@ -129,7 +160,7 @@ void process_test_input() {
 
 /**
  * Reads a sequence of ASCII character input over the serial interface
- * 
+ *
  * This is useful for testing the program via the serial monitor when no PS2 keyboard is available.
  */
 void get_test_input(char inputBuffer[], uint8_t maxSize)
@@ -154,9 +185,9 @@ void get_test_input(char inputBuffer[], uint8_t maxSize)
 }
 
 /**
- * Put this in the process loop and if 10 seconds has passed since startup "hello world" 
+ * Put this in the process loop and if 10 seconds has passed since startup "hello world"
  * PS2 input will be injected into the buffer.
- * 
+ *
  * This is useful for testing detached from the serial cable when no PS2 keyboard is available.
  */
 void test_hello_world() {
@@ -172,8 +203,8 @@ void test_hello_world() {
 
 /**
  * Allows the red LED near to the USB port to be flashed.
- * 
- * This was useful for diagnosing where the code had got to when debugging why 
+ *
+ * This was useful for diagnosing where the code had got to when debugging why
  * things were not working when detached from serial monitor.
  */
 void blink(uint8_t count) {
