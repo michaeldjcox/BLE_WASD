@@ -34,17 +34,20 @@ Adafruit_BluefruitLE_SPI ble(BLUEFRUIT_SPI_CS, BLUEFRUIT_SPI_IRQ, BLUEFRUIT_SPI_
  * Initial setup
  */
 void setup() {
-  if (DEBUG) {
-    Serial.begin(115200); //debuging
-    // If USB connection is not there this can cause failure to start
-    // DEBUG must be off when wired USB is not connected for serial comms!
-    while (!Serial)
-      ;  // required for Flora & Micro
-    delay(500);
-  }
-  if (TEST_SERIAL_INPUT || TEST_HELLO_WORLD) {
-    setup_test_keymaps();
-  }
+  
+#if defined (DEBUG) 
+  Serial.begin(115200); //debuging
+  // If USB connection is not there this can cause failure to start
+  // DEBUG must be off when wired USB is not connected for serial comms!
+  while (!Serial)
+    ;  // required for Flora & Micro
+  delay(500);
+#endif
+
+#if defined (TEST_SERIAL_INPUT) || defined (TEST_HELLO_WORLD)
+  setup_test_keymaps();
+#endif
+
   setup_keymaps();
   setup_PS2();
   start_keyboard();
@@ -54,12 +57,15 @@ void setup() {
  * Main loop - repeats processing the entered PS2 keys
  */
 void loop() {
-  if (TEST_SERIAL_INPUT) {
-    test_serial_input();
-  }
-  if (TEST_HELLO_WORLD) {
-    test_hello_world();
-  }
+  
+#if defined (TEST_SERIAL_INPUT)
+  test_serial_input();
+#endif
+
+#if defined (TEST_HELLO_WORLD)
+  test_hello_world();
+#endif
+
   process_buffer();
 }
 

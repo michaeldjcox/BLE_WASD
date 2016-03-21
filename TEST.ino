@@ -1,3 +1,6 @@
+
+#if defined (TEST_SERIAL_INPUT) || defined (TEST_HELLO_WORLD)
+
 /**
  * Test functions that permit typing ASCII into the serial monitor and have it converted to PS2 keycodes and
  * injected into the buffer as if a PS2 keyboard was connected to the bluefruit.
@@ -41,34 +44,16 @@ void test_input(String input) {
 void test_ps2_msg(uint8_t ps2Msg) {
   if (ps2Msg == PS2_SET_RESET_LEDS) {
     add_to_buffer(PS2_LED_ACK);
-  } else {
-    if (DEBUG) {
-      Serial.print(F("LEDS:"));
-      if (ps2Msg & 2) {
-        Serial.print(F("ON-"));
-      } else {
-        Serial.print(F("OFF-"));
-      }
-      if (ps2Msg & 4) {
-        Serial.print(F("ON-"));
-      } else {
-        Serial.print(F("OFF-"));
-      }
-      if (ps2Msg & 1) {
-        Serial.print(F("ON"));
-      } else {
-        Serial.print(F("OFF"));
-      }
-      Serial.println();
-    }
-  }
+  } 
+
+  debug_ps2_msg(ps2Msg);
 }
 
 void debug_ps2_msg(uint8_t ps2Msg) {
   if (ps2Msg == PS2_SET_RESET_LEDS) {
     Serial.println("SET RESET LEDSs");
   } else {
-    if (DEBUG) {
+#if defined (DEBUG) 
       Serial.print(F("LEDS:"));
       if (ps2Msg & 2) {
         Serial.print(F("ON-"));
@@ -86,7 +71,7 @@ void debug_ps2_msg(uint8_t ps2Msg) {
         Serial.print(F("OFF"));
       }
       Serial.println();
-    }
+#endif
   }
 }
 
@@ -96,12 +81,14 @@ void debug_ps2_msg(uint8_t ps2Msg) {
  */
 void process_test_input() {
   String result = inputBuffer;
-  if (DEBUG) {
+
+#if defined (DEBUG) 
     Serial.print(F("Test input: ("));
     Serial.print(count);
     Serial.print(F(") "));
     Serial.println(result);
-  }
+#endif
+
   if (result.equals("PLAYPAUSE")) {
     add_to_buffer(PS2_EXTENDED);
     add_to_buffer(PS2_PLAY_PAUSE);
@@ -239,6 +226,7 @@ void blink(uint8_t count) {
     delay(1000);              // wait for a second
   }
 }
+
 
 /**
  * Sets up the keyboard mapping from PS2 to HID
@@ -402,6 +390,8 @@ void setup_test_keymaps() {
 
   ASCII_to_PS2_keymap[' '] = PS2_SPACE;
 }
+
+#endif
 
 
 

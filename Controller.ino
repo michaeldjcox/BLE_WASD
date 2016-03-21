@@ -100,15 +100,15 @@ void shutdown_USB() {
  */
 void switch_mode() {
   if (bluetooth) {
-    if (DEBUG) {
+#if defined (DEBUG) 
       Serial.println(F("Switching to USB keyboard"));
-    }
+#endif
     shutdown_BLE();
     startup_USB(false);
   } else {
-    if (DEBUG) {
+#if defined (DEBUG) 
       Serial.println(F("Switching to Bluetooth keyboard"));
-    }
+#endif
     shutdown_USB();
     startup_BLE(false);
   }
@@ -119,15 +119,15 @@ void switch_mode() {
  */
 void reconfigure() {
   if (bluetooth) {
-    if (DEBUG) {
+#if defined (DEBUG) 
       Serial.println(F("Reconfiguring Bluetooth keyboard"));
-    }
+#endif
     shutdown_BLE();
     startup_BLE(true);
   } else {
-    if (DEBUG) {
+#if defined (DEBUG) 
       Serial.println(F("Reconfiguring USB keyboard"));
-    }
+#endif
     shutdown_USB();
     startup_USB(true);
   }
@@ -140,14 +140,14 @@ void reconfigure() {
  */
 void start_keyboard() {
   if (bluetooth) {
-    if (DEBUG) {
+#if defined (DEBUG) 
       Serial.println(F("Starting as Bluetooth keyboard"));
-    }
+#endif
     startup_BLE(false);
   } else {
-    if (DEBUG) {
+#if defined (DEBUG) 
       Serial.println(F("Starting as USB keyboard"));
-    }
+#endif
     startup_USB(false);
   }
 }

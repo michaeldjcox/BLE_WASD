@@ -112,12 +112,12 @@ void add_to_buffer(uint8_t input) {
     buffer[i] = input;
     head = i;
   }
-  if (DEBUG) {
+#if defined (DEBUG) 
     Serial.print(F("Raw PS2: "));
     Serial.print(input, HEX);
     Serial.print(" ");
     Serial.println(head);
-  }
+#endif
 }
 
 /**
@@ -272,11 +272,14 @@ void send_ps2_msg(uint8_t ps2Msg) {
   pinMode(DATA_PIN, OUTPUT);
   digitalWrite(DATA_PIN, LOW);
   interrupts();
-  if (TEST_SERIAL_INPUT) {
+  
+#if defined (TEST_SERIAL_INPUT) 
     test_ps2_msg(ps2Msg);
-  } else if (DEBUG) {
+#endif 
+  
+#if defined (DEBUG) && not defined (TEST_SERIAL_INPUT)   
     debug_ps2_msg(ps2Msg);
-  }
+#endif 
 }
 
 /**

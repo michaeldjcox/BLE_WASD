@@ -28,10 +28,12 @@ void stop_BLE() {
 
 void reconfigure_BLE() {
   /* Initialise the module */
-  if (DEBUG) {
+
+#if defined (DEBUG) 
     Serial.print(F("Initialising the Bluefruit LE module: "));
     Serial.println(F("Performing a factory reset: "));
-  }
+#endif
+
   ble.factoryReset();
 
   //Disable command echo from Bluefruit
@@ -43,20 +45,21 @@ void reconfigure_BLE() {
   ble.println(F("AT+GAPDEVNAME=BLE_WASD"));
 
   /* Enable HID Service */
-  if (DEBUG) {
+#if defined (DEBUG) 
     Serial.println(F("Enable HID Service (including Keyboard): "));
-  }
+#endif
+
   if (! ble.sendCommandCheckOK(F( "AT+BleKeyboardEn=On"  ))) {
-    if (DEBUG) {
+#if defined (DEBUG) 
       Serial.println(F("Could not enable Keyboard"));
-    }
+#endif
   }
 
   /* Add or remove service requires a reset */
   if (! ble.reset() ) {
-    if (DEBUG) {
+#if defined (DEBUG) 
       Serial.println(F("Couldn't reset??"));
-    }
+#endif
   }
 }
 

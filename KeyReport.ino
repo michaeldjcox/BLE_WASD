@@ -97,10 +97,10 @@ KeyReport getKeyReport() {
  * Outputs a debug string for the current key report
  */
 void log_key_report(KeyReport report) {
-  if (DEBUG) {
+#if defined (DEBUG) 
     String cmd = "0xFD-" + report_to_string(report);
     Serial.println(cmd);
-  }
+#endif
 }
 
 /**

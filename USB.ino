@@ -39,51 +39,51 @@ void send_usb_report(KeyReport report) {
 void send_usb_media(uint8_t hidKey) {
   switch (hidKey) {
     case (HID_PLAY_PAUSE):
-      if (DEBUG) {
+#if defined (DEBUG) 
         Serial.println(F("Remote->PlayPause"));
-      }
+#endif
       Remote.playpause();
       Remote.clear();
       break;
     case (HID_STOP):
-      if (DEBUG) {
+#if defined (DEBUG) 
         Serial.println(F("Remote->Stop"));
-      }
+#endif
       Remote.stop();
       Remote.clear();
       break;
     case (HID_NEXT_TRACK):
-      if (DEBUG) {
+#if defined (DEBUG) 
         Serial.println(F("Remote->Next"));
-      }
+#endif
       Remote.next();
       Remote.clear();
       break;
     case (HID_PREV_TRACK):
-      if (DEBUG) {
+#if defined (DEBUG) 
         Serial.println(F("Remote->Prev"));
-      }
+#endif
       Remote.previous();
       Remote.clear();
       break;
     case (HID_VOL_UP):
-      if (DEBUG) {
+#if defined (DEBUG) 
         Serial.println(F("Remote->VolUp"));
-      }
+#endif
       Remote.increase();
       Remote.clear();
       break;
     case (HID_VOL_DWN):
-      if (DEBUG) {
+#if defined (DEBUG) 
         Serial.println(F("Remote->VolDwn"));
-      }
+#endif
       Remote.decrease();
       Remote.clear();
       break;
     case (HID_MUTE):
-      if (DEBUG) {
+#if defined (DEBUG) 
         Serial.println(F("Remote->Mute"));
-      }
+#endif
       Remote.mute();
       Remote.clear();
       break;
