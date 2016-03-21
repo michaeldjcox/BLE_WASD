@@ -49,9 +49,10 @@ void startup_BLE(boolean reset) {
   if (reset) {
     reconfigure_BLE();
   }
-  // Show two LEDs - a broken line = wireless
-  flash_LEDs(5);
+  // Show two LEDs - a broken line = wireless  
   bluetooth = true;
+  clear_all();
+  flash_LEDs(3);
   start_PS2();
 }
 
@@ -63,6 +64,7 @@ void startup_BLE(boolean reset) {
 void shutdown_BLE() {
   stop_PS2();
   clear_all();
+  delay(250); // delay needed or control key can get stuck
   bluetooth = false;
   stop_BLE();
 }
@@ -75,9 +77,10 @@ void startup_USB(boolean reset) {
   if (reset) {
     reconfigure_USB();
   }
-  // Show three LEDs - a full line = wired
-  flash_LEDs(7);
+  // Show three LEDs - a full line = wired  
   usb = true;
+  clear_all();
+  flash_LEDs(7);
   start_PS2();
 }
 
@@ -87,6 +90,7 @@ void startup_USB(boolean reset) {
 void shutdown_USB() {
   stop_PS2();
   clear_all();
+  delay(250); // delay needed or control key can get stuck
   usb = false;
   stop_USB();
 }

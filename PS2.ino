@@ -155,10 +155,11 @@ void process_buffer() {
         if (sendLeds) {
           sendLeds = false;
           send_ps2_msg(leds);
-          if (autoLEDclear) {            
+        } else         
+          if (autoLEDclear) {
+            delay(1000);
             clear_LEDs();
           }
-        }
       } else {
         if (ps2Key == PS2_PAUSE_SEQUENCE) {
           hidKey = HID_PAUSE;
@@ -186,7 +187,6 @@ void process_buffer() {
                 if (hidKey == HID_NUM_LCK
                     || hidKey == HID_SCR_LCK
                     || hidKey == HID_CAPS) {
-                  sendLeds = true;
                   if (hidKey == HID_NUM_LCK) {
                     leds ^= 2;
                   } else if (hidKey == HID_SCR_LCK) {
@@ -194,7 +194,7 @@ void process_buffer() {
                   } else if (hidKey == HID_CAPS) {
                     leds ^= 4;
                   }
-                  send_ps2_msg((byte) PS2_SET_RESET_LEDS);
+                  set_LEDs(leds);
                 }
               } else {
                 report_add(hidKey);
@@ -274,6 +274,8 @@ void send_ps2_msg(uint8_t ps2Msg) {
   interrupts();
   if (TEST_SERIAL_INPUT) {
     test_ps2_msg(ps2Msg);
+  } else if (DEBUG) {
+    debug_ps2_msg(ps2Msg);
   }
 }
 
