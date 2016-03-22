@@ -45,15 +45,15 @@ void test_ps2_msg(uint8_t ps2Msg) {
   if (ps2Msg == PS2_SET_RESET_LEDS) {
     add_to_buffer(PS2_LED_ACK);
   } 
-
+#if defined (DEBUG) 
   debug_ps2_msg(ps2Msg);
+#endif
 }
 
 void debug_ps2_msg(uint8_t ps2Msg) {
   if (ps2Msg == PS2_SET_RESET_LEDS) {
     Serial.println("SET RESET LEDSs");
   } else {
-#if defined (DEBUG) 
       Serial.print(F("LEDS:"));
       if (ps2Msg & 2) {
         Serial.print(F("ON-"));
@@ -71,7 +71,6 @@ void debug_ps2_msg(uint8_t ps2Msg) {
         Serial.print(F("OFF"));
       }
       Serial.println();
-#endif
   }
 }
 

@@ -6,7 +6,12 @@
  * Start the low energy bluetooth module
  */
 void start_BLE() {
-  ble.begin(DEBUG); //verbose on-off
+#if defined (DEBUG) 
+  ble.begin(1);
+#endif
+#if not defined (DEBUG) 
+  ble.begin(0);
+#endif
 }
 
 /**
@@ -20,7 +25,7 @@ void stop_BLE() {
 
   ble.end();
   // Doing a begin forces disconnect more reliably
-  ble.begin(DEBUG);
+  start_BLE();
   // Stop advertising so connection is not automatically restablished
   ble.println(F("AT+GAPSTOPADV"));
   ble.end();

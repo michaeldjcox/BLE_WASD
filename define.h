@@ -1,9 +1,12 @@
 
-#define DEBUG 0
+// Uncomment to allow debug output on serial port
+//#define DEBUG 1
 
-#define TEST_SERIAL_INPUT 0
+// Uncomment to permit entering strings into serial input and have them played in as if a PS2 keyboard was connected
+//#define TEST_SERIAL_INPUT 1
 
-#define TEST_HELLO_WORLD 0
+// Uncomment to periodically play "hello world" in as if PS2 keyboard was connected
+//#define TEST_HELLO_WORLD 1
 
 /**
  * Size of buffer for key strokes
