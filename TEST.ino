@@ -50,30 +50,6 @@ void test_ps2_msg(uint8_t ps2Msg) {
 #endif
 }
 
-void debug_ps2_msg(uint8_t ps2Msg) {
-  if (ps2Msg == PS2_SET_RESET_LEDS) {
-    Serial.println("SET RESET LEDSs");
-  } else {
-      Serial.print(F("LEDS:"));
-      if (ps2Msg & 2) {
-        Serial.print(F("ON-"));
-      } else {
-        Serial.print(F("OFF-"));
-      }
-      if (ps2Msg & 4) {
-        Serial.print(F("ON-"));
-      } else {
-        Serial.print(F("OFF-"));
-      }
-      if (ps2Msg & 1) {
-        Serial.print(F("ON"));
-      } else {
-        Serial.print(F("OFF"));
-      }
-      Serial.println();
-  }
-}
-
 /**
  * Processes some ascii characters from the input buffer and converts to
  * PS2 keycodes
