@@ -117,6 +117,10 @@ void add_to_buffer(uint8_t input) {
     Serial.print(input, HEX);
     Serial.print(" ");
     Serial.println(head);
+  if (i == tail) {
+    Serial.println(F("BUFFER OVERFLOW!"));  
+  }
+
 #endif
 }
 
@@ -285,7 +289,7 @@ void send_ps2_msg(uint8_t ps2Msg) {
 
 void debug_ps2_msg(uint8_t ps2Msg) {
   if (ps2Msg == PS2_SET_RESET_LEDS) {
-    Serial.println("SET RESET LEDSs");
+    Serial.println(F("SET RESET LEDSs"));
   } else {
       Serial.print(F("LEDS:"));
       if (ps2Msg & 2) {
