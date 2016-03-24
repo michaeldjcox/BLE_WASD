@@ -11,7 +11,7 @@
 /**
  * Size of buffer for key strokes
  */
-#define BUFFER_SIZE 100
+#define BUFFER_SIZE 512
 
 /*
  * pins to use for PS2 keyboard
