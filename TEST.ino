@@ -10,7 +10,7 @@
 uint8_t ASCII_to_PS2_keymap[255];
 uint8_t ASCII_to_modifier_keymap[255];
 
-static char inputBuffer[BUFFER_SIZE + 1];
+static char inputBuffer[TEST_BUFFER_SIZE];
 static uint8_t count = 0;
 
 uint32_t startup_ms = 0;
@@ -20,7 +20,7 @@ uint32_t startup_ms = 0;
  */
 void test_serial_input() {
 
-  get_test_input(inputBuffer, BUFFER_SIZE);
+  get_test_input(inputBuffer, TEST_BUFFER_SIZE);
   if (count > 0) {
 
     process_test_input();
@@ -33,7 +33,7 @@ void test_serial_input() {
  */
 void test_input(String input) {
 
-  input.toCharArray(inputBuffer, BUFFER_SIZE);
+  input.toCharArray(inputBuffer, TEST_BUFFER_SIZE);
   count = input.length();
   process_test_input();
 }

@@ -9,9 +9,14 @@
 //#define TEST_HELLO_WORLD 1
 
 /**
- * Size of buffer for key strokes
+ * Size of buffer for key strokes - much more than 200 it stops working
  */
-#define BUFFER_SIZE 512
+#define BUFFER_SIZE 200
+
+/**
+ * Size of buffer for test key strokes
+ */
+#define TEST_BUFFER_SIZE 200
 
 /*
  * pins to use for PS2 keyboard
@@ -325,6 +330,8 @@
 #define PS2_PAUSE_KEY_FAKE      0x6D
 
 #define PS2_SET_RESET_LEDS      0xED //Set the keyboard LEDs
+
+#define PS2_BUFFER_OVERFLOW     0xFF // My special marker for buffer overflow
 
 /**
  * Arrays for storing the key mapping from PS2 to HID

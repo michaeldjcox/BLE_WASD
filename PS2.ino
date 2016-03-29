@@ -10,7 +10,7 @@ uint8_t PS2Long_to_HID_keymap[255];
 static volatile uint8_t buffer[BUFFER_SIZE];
 
 //keep track of our place in the buffer
-static volatile uint8_t head, tail;
+static volatile uint8_t head, tail, tailMinus1;
 
 //keep track of PS2 bits sent and received
 static volatile uint8_t sendBits, msg, bitCount, setBits;
@@ -53,6 +53,7 @@ void setup_PS2() {
 
   head = 0;
   tail = 0;
+  tailMinus1 = BUFFER_SIZE - 1;
   sendBits = 0;
 }
 
@@ -104,23 +105,50 @@ void ps2interrupt(void) {
  * Adds the specified PS2 key code to the buffer
  */
 void add_to_buffer(uint8_t input) {
+#if defined (DEBUG)
+  Serial.print(F("Raw PS2: "));
+  Serial.println(input, HEX);
+#endif
+
   uint8_t i = head + 1;
   if (i >= BUFFER_SIZE) {
     i = 0;
   }
-  if (i != tail) {
+  if (tail == 0) {
+    tailMinus1 = BUFFER_SIZE - 1;
+  } else {
+    tailMinus1 = tail - 1;
+  }
+
+  if (i != tail && i != tailMinus1) {
     buffer[i] = input;
     head = i;
   }
-#if defined (DEBUG) 
-    Serial.print(F("Raw PS2: "));
-    Serial.print(input, HEX);
-    Serial.print(" ");
-    Serial.println(head);
-  if (i == tail) {
-    Serial.println(F("BUFFER OVERFLOW!"));  
+  if (i == tailMinus1) {
+    buffer[i] = PS2_BUFFER_OVERFLOW;
+    head = i;
   }
 
+  log_buffer_stats(i);
+}
+
+void log_buffer_stats(uint8_t i) {
+#if defined (DEBUG)
+  Serial.print("Buffer: last=");
+  Serial.print(i);
+  Serial.print(" head=");
+  Serial.print(head);
+  Serial.print(" tail=");
+  Serial.print(tail);
+  //  Serial.print(" tailMinus1=");
+  //  Serial.print(tailMinus1);
+  if (i == tailMinus1) {
+    Serial.println(" *** OVERFLOW ***");
+  } else if (head == tail) {
+    Serial.println(" *** EMPTY ***");
+  } else {
+    Serial.println();
+  }
 #endif
 }
 
@@ -131,13 +159,25 @@ static inline uint8_t get_scan_code(void) {
   uint8_t c, i;
 
   i = tail;
-  if (i == head)
+  if (i == head) {
     return 0;
+  }
   i++;
-  if (i >= BUFFER_SIZE)
+  if (i >= BUFFER_SIZE) {
     i = 0;
+  }
   c = buffer[i];
   tail = i;
+
+  if (tail == 0) {
+    tailMinus1 = BUFFER_SIZE - 1;
+  } else {
+    tailMinus1 = tail - 1;
+  }
+
+
+  log_buffer_stats(i);
+
   return c;
 }
 
@@ -151,7 +191,15 @@ void process_buffer() {
     if (skip) {
       --skip;
     } else {
-      if (ps2Key == PS2_EXTENDED) {
+      if (ps2Key == PS2_BUFFER_OVERFLOW) {
+        ext = false;
+        brk = false;
+        clear_key_report();
+        send_key_report();
+#if defined (DEBUG)
+        Serial.println(F("CLEAR DOWN ON BUFFER OVERFLOW!"));
+#endif
+      } else if (ps2Key == PS2_EXTENDED) {
         ext = true;
       } else if (ps2Key == PS2_RELEASE) {
         brk = true;
@@ -159,11 +207,10 @@ void process_buffer() {
         if (sendLeds) {
           sendLeds = false;
           send_ps2_msg(leds);
-        } else         
-          if (autoLEDclear) {
-            delay(1000);
-            clear_LEDs();
-          }
+        } else if (autoLEDclear) {
+          delay(1000);
+          clear_LEDs();
+        }
       } else {
         if (ps2Key == PS2_PAUSE_SEQUENCE) {
           hidKey = HID_PAUSE;
@@ -276,14 +323,14 @@ void send_ps2_msg(uint8_t ps2Msg) {
   pinMode(DATA_PIN, OUTPUT);
   digitalWrite(DATA_PIN, LOW);
   interrupts();
-  
-#if defined (TEST_SERIAL_INPUT) 
-    test_ps2_msg(ps2Msg);
-#endif 
-  
-#if defined (DEBUG) && not defined (TEST_SERIAL_INPUT)   
-    debug_ps2_msg(ps2Msg);
-#endif 
+
+#if defined (TEST_SERIAL_INPUT)
+  test_ps2_msg(ps2Msg);
+#endif
+
+#if defined (DEBUG) && not defined (TEST_SERIAL_INPUT)
+  debug_ps2_msg(ps2Msg);
+#endif
 }
 
 
@@ -291,23 +338,23 @@ void debug_ps2_msg(uint8_t ps2Msg) {
   if (ps2Msg == PS2_SET_RESET_LEDS) {
     Serial.println(F("SET RESET LEDSs"));
   } else {
-      Serial.print(F("LEDS:"));
-      if (ps2Msg & 2) {
-        Serial.print(F("ON-"));
-      } else {
-        Serial.print(F("OFF-"));
-      }
-      if (ps2Msg & 4) {
-        Serial.print(F("ON-"));
-      } else {
-        Serial.print(F("OFF-"));
-      }
-      if (ps2Msg & 1) {
-        Serial.print(F("ON"));
-      } else {
-        Serial.print(F("OFF"));
-      }
-      Serial.println();
+    Serial.print(F("LEDS:"));
+    if (ps2Msg & 2) {
+      Serial.print(F("ON-"));
+    } else {
+      Serial.print(F("OFF-"));
+    }
+    if (ps2Msg & 4) {
+      Serial.print(F("ON-"));
+    } else {
+      Serial.print(F("OFF-"));
+    }
+    if (ps2Msg & 1) {
+      Serial.print(F("ON"));
+    } else {
+      Serial.print(F("OFF"));
+    }
+    Serial.println();
   }
 }
 
