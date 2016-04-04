@@ -259,6 +259,8 @@ void process_buffer() {
         ext = false;
       }
     }
+  } else {
+    // No scan code - should I send another clear for good measure?
   }
 }
 

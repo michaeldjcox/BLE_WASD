@@ -8,6 +8,10 @@
 #include <SoftwareSerial.h>
 #endif
 
+// TODO - still getting key repeats n multikey press - try sending another clear if buffer empty?
+// TODO - still is often too slow why?
+// TODO - should I try earlier firmware - should I try 0.7.0 beta
+
 /**
  * BLE WASD Keyboard V3
  *
