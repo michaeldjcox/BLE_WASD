@@ -51,6 +51,22 @@ void test_ps2_msg(uint8_t ps2Msg) {
 }
 
 /**
+ * Returns the amount fo free memory
+ */
+void free_mem () 
+{
+  extern int __heap_start, *__brkval; 
+  int v; 
+  int freeRam = (int) &v - (__brkval == 0 ? (int) &__heap_start : (int) __brkval); 
+
+#if defined (DEBUG) 
+  Serial.print(F("Free RAM: "));
+  Serial.print(freeRam);
+  Serial.println();
+#endif
+}
+
+/**
  * Processes some ascii characters from the input buffer and converts to
  * PS2 keycodes
  */
@@ -64,6 +80,10 @@ void process_test_input() {
     Serial.println(result);
 #endif
 
+
+  if (result.equals("MEM")) {
+    free_mem();
+  } else
   if (result.equals("PLAYPAUSE")) {
     add_to_buffer(PS2_EXTENDED);
     add_to_buffer(PS2_PLAY_PAUSE);

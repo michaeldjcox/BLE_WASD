@@ -6,10 +6,10 @@
  * Start the low energy bluetooth module
  */
 void start_BLE() {
-#if defined (DEBUG) 
+#if defined (DEBUG)
   ble.begin(1);
 #endif
-#if not defined (DEBUG) 
+#if not defined (DEBUG)
   ble.begin(0);
 #endif
 }
@@ -34,9 +34,9 @@ void stop_BLE() {
 void reconfigure_BLE() {
   /* Initialise the module */
 
-#if defined (DEBUG) 
-    Serial.print(F("Initialising the Bluefruit LE module: "));
-    Serial.println(F("Performing a factory reset: "));
+#if defined (DEBUG)
+  Serial.print(F("Initialising the Bluefruit LE module: "));
+  Serial.println(F("Performing a factory reset: "));
 #endif
 
   ble.factoryReset();
@@ -50,20 +50,20 @@ void reconfigure_BLE() {
   ble.println(F("AT+GAPDEVNAME=BLE_WASD"));
 
   /* Enable HID Service */
-#if defined (DEBUG) 
-    Serial.println(F("Enable HID Service (including Keyboard): "));
+#if defined (DEBUG)
+  Serial.println(F("Enable HID Service (including Keyboard): "));
 #endif
 
   if (! ble.sendCommandCheckOK(F( "AT+BleKeyboardEn=On"  ))) {
-#if defined (DEBUG) 
-      Serial.println(F("Could not enable Keyboard"));
+#if defined (DEBUG)
+    Serial.println(F("Could not enable Keyboard"));
 #endif
   }
 
   /* Add or remove service requires a reset */
   if (! ble.reset() ) {
-#if defined (DEBUG) 
-      Serial.println(F("Couldn't reset??"));
+#if defined (DEBUG)
+    Serial.println(F("Couldn't reset??"));
 #endif
   }
 }
@@ -72,8 +72,23 @@ void reconfigure_BLE() {
  * Sends the key report over BLE
  */
 void send_ble_report(KeyReport report) {
-  String cmd = "AT+BLEKEYBOARDCODE=" + report_to_string(report);
-  ble.println(cmd);
+  String cmd =  "AT+BLEKEYBOARDCODE=" + report_to_string(report);
+  send(cmd);
+}
+
+/**
+ * Sends safely - probably slower but there are potential issues with
+ * repeating keys if you do not
+ */
+void send(String cmd) {
+  int commandLength = cmd.length() + 1;
+  char buffer[commandLength];
+  cmd.toCharArray(buffer, commandLength);
+  while (!ble.sendCommandCheckOK(buffer)) {
+    if (!ble.isConnected()) {
+      break;
+    }
+  }
 }
 
 /**
@@ -106,7 +121,7 @@ void send_ble_media(uint8_t hidKey) {
     default:
       return;
   }
-  ble.println(str);
+  send(str);
 }
 
 
