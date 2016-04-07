@@ -28,6 +28,13 @@ void report_add(uint8_t hidKey) {
   }
 }
 
+boolean is_clear() {
+  return keyReport.modifiers == 0 && keyReport.keys[0] == 0 && keyReport.keys[1] == 0
+             && keyReport.keys[2] == 0 && keyReport.keys[3] == 0
+             && keyReport.keys[4] == 0 && keyReport.keys[5] == 0;
+  
+}
+
 /**
  * Updates the key report given a key release
  */
