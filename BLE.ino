@@ -83,10 +83,18 @@ void send_ble_report(KeyReport report) {
 void send(String cmd) {
   int commandLength = cmd.length() + 1;
   char buffer[commandLength];
+  int attempts=0;
   cmd.toCharArray(buffer, commandLength);
   while (!ble.sendCommandCheckOK(buffer)) {
+    attempts++;
     if (!ble.isConnected()) {
       break;
+    }
+    if (attempts > 5) {
+#if defined (DEBUG)
+    Serial.println(F("Giving up!"));
+#endif
+       break;
     }
   }
 }
